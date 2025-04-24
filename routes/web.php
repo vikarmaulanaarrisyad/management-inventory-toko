@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\{
+    CustomerController,
     DashboardController,
     KategoriController,
     ProdukController,
@@ -33,5 +34,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/supplier/data', [SupplierController::class, 'data'])->name('supplier.data');
         Route::post('/supplier/import-excel', [SupplierController::class, 'importExcel'])->name('supplier.import_excel');
         Route::resource('/supplier', SupplierController::class)->except('create', 'edit');
+
+        // Customer
+        Route::get('/customer/data', [CustomerController::class, 'data'])->name('customer.data');
+        Route::post('/customer/import-excel', [CustomerController::class, 'importExcel'])->name('customer.import_excel');
+        Route::resource('/customer', CustomerController::class);
     });
 });
