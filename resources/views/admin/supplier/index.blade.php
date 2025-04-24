@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Data Produk')
+@section('title', 'Data Supplier')
 
-@section('subtitle', 'Data Produk')
+@section('subtitle', 'Data Supplier')
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
@@ -14,34 +14,21 @@
         <div class="col-lg-12">
             <x-card>
                 <x-slot name="header">
-                    <div class="d-flex flex-wrap justify-content-start">
-                        <button onclick="addForm(`{{ route('produk.store') }}`)" class="btn btn-sm btn-primary mb-2 mr-2">
-                            <i class="fas fa-plus-circle"></i> Tambah Data
-                        </button>
+                    <button onclick="addForm(`{{ route('supplier.store') }}`)" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus-circle"></i> Tambah Data
+                    </button>
 
-                        <button onclick="confirmImport()" type="button" class="btn btn-success btn-sm mb-2 mr-2">
-                            <i class="fas fa-download"></i> Import Data
-                        </button>
-
-                        <a href="{{ route('produk.export_excel') }}" class="btn btn-sm btn-outline-success mb-2 mr-2">
-                            <i class="fas fa-file-excel"></i> Export Excel
-                        </a>
-
-                        <a href="{{ route('produk.pdf') }}" target="blank" class="btn btn-sm btn-outline-danger mb-2 mr-2">
-                            <i class="fas fa-file-pdf"></i> Export PDF
-                        </a>
-                    </div>
+                    <button onclick="confirmImport()" type="button" class="btn btn-success btn-sm"><i
+                            class="fas fa-download"></i> Import
+                        Data</button>
                 </x-slot>
-
 
                 <x-table>
                     <x-slot name="thead">
                         <th width="5%">No</th>
-                        <th>Kode Produk</th>
-                        <th>Nama Produk</th>
-                        <th>Kategori</th>
-                        <th>Stok</th>
-                        <th>Harga</th>
+                        <th>Nama Supplier</th>
+                        <th>Nomor Hp</th>
+                        <th>Alamat</th>
                         <th width="15%" class="text-center">Aksi</th>
                     </x-slot>
                 </x-table>
@@ -49,12 +36,11 @@
         </div>
     </div>
 
-    @include('admin.produk.form')
-    @include('admin.produk.import')
+    @include('admin.supplier.form')
+    @include('admin.supplier.import')
 @endsection
 
 @include('includes.datatables')
-@include('includes.select2')
 
 @push('scripts')
     <script>
@@ -69,7 +55,7 @@
             autoWidth: false,
             responsive: true,
             ajax: {
-                url: '{{ route('produk.data') }}',
+                url: '{{ route('supplier.data') }}',
             },
             columns: [{
                     data: 'DT_RowIndex',
@@ -78,19 +64,13 @@
                     searchable: false
                 },
                 {
-                    data: 'kode_produk'
+                    data: 'nama'
                 },
                 {
-                    data: 'nama_produk'
+                    data: 'nomorhp'
                 },
                 {
-                    data: 'kategori'
-                },
-                {
-                    data: 'stok'
-                },
-                {
-                    data: 'harga'
+                    data: 'alamat'
                 },
                 {
                     data: 'aksi',
@@ -101,7 +81,7 @@
             ]
         })
 
-        function addForm(url, title = 'Form Data Produk') {
+        function addForm(url, title = 'Form Data Supplier') {
             $(modal).modal('show');
             $(`${modal} .modal-title`).text(title);
             $(`${modal} form`).attr('action', url);
@@ -110,7 +90,7 @@
             resetForm(`${modal} form`);
         }
 
-        function editForm(url, title = 'Form Data Produk') {
+        function editForm(url, title = 'Form Data Supplier') {
             Swal.fire({
                 title: "Memuat...",
                 text: "Mohon tunggu sebentar...",
@@ -131,10 +111,6 @@
 
                     resetForm(`${modal} form`);
                     loopForm(response.data);
-
-                    $('#kategori_id')
-                        .append(new Option(response.data.kategori.nama, response.data.kategori.id, true, true))
-                        .trigger('change');
                 })
                 .fail(errors => {
                     Swal.close(); // Tutup loading jika terjadi error

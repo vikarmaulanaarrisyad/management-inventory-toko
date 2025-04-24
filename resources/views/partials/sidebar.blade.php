@@ -57,12 +57,17 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('supplier.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-truck"></i>
                         <p>Data Supplier</p>
                     </a>
                 </li>
-
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Customer</p>
+                    </a>
+                </li>
                 <!-- Transaksi -->
                 <li class="nav-header">TRANSAKSI</li>
                 <li class="nav-item">

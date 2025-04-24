@@ -35,7 +35,7 @@ class ProdukController extends Controller
             ->addColumn('aksi', function ($q) {
                 return '
                 <button onclick="editForm(`' . route('produk.show', $q->id) . '`)" class="btn btn-sm btn-primary" title="Edit"><i class="fas fa-pencil-alt"></i></button>
-                <button onclick="deleteData(`' . route('produk.destroy', $q->id) . '`, `' . $q->nama . '`)" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                <button onclick="deleteData(`' . route('produk.destroy', $q->id) . '`, `' . $q->nama_produk . '`)" class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash-alt"></i></button>
             ';
             })
             ->escapeColumns([])

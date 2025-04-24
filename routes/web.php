@@ -3,7 +3,8 @@
 use App\Http\Controllers\{
     DashboardController,
     KategoriController,
-    ProdukController
+    ProdukController,
+    SupplierController
 };
 use Illuminate\Support\Facades\Route;
 
@@ -27,5 +28,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/produk/pdf', [ProdukController::class, 'exportPdf'])->name('produk.pdf');
         Route::post('/produk/import-excel', [ProdukController::class, 'importExcel'])->name('produk.import_excel');
         Route::resource('/produk', ProdukController::class)->except('create', 'edit');
+
+        // Supplier
+        Route::get('/supplier/data', [SupplierController::class, 'data'])->name('supplier.data');
+        Route::post('/supplier/import-excel', [SupplierController::class, 'importExcel'])->name('supplier.import_excel');
+        Route::resource('/supplier', SupplierController::class)->except('create', 'edit');
     });
 });
