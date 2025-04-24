@@ -47,13 +47,13 @@
                 <li class="nav-item">
                     <a href="{{ route('kategori.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tags"></i>
-                        <p>Kategori Barang</p>
+                        <p>Kategori</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('produk.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-boxes"></i>
-                        <p>Data Barang</p>
+                        <p>Data Produk</p>
                     </a>
                 </li>
                 <li class="nav-item">

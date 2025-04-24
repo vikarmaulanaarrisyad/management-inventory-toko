@@ -143,4 +143,14 @@ class KategoriController extends Controller
             ], 500);
         }
     }
+
+    public function select2(Request $request)
+    {
+        $search = $request->get('q');
+        $data = Kategori::where('nama', 'like', "%$search%")
+            ->orderBy('nama')
+            ->get(['id', 'nama as text']); // format Select2: id + text
+
+        return response()->json($data);
+    }
 }

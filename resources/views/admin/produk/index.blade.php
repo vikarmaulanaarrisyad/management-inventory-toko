@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Kategori Barang')
+@section('title', 'Data Produk')
 
-@section('subtitle', 'Kategori Barang')
+@section('subtitle', 'Data Produk')
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
@@ -14,19 +14,32 @@
         <div class="col-lg-12">
             <x-card>
                 <x-slot name="header">
-                    <button onclick="addForm(`{{ route('kategori.store') }}`)" class="btn btn-sm btn-primary">
+                    <button onclick="addForm(`{{ route('produk.store') }}`)" class="btn btn-sm btn-primary">
                         <i class="fas fa-plus-circle"></i> Tambah Data
                     </button>
 
                     <button onclick="confirmImport()" type="button" class="btn btn-success btn-sm"><i
                             class="fas fa-download"></i> Import
                         Data</button>
+
+                    <a href="{{ route('produk.export_excel') }}" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </a>
+
+                    <a href="{{ route('produk.pdf') }}" target="blank" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </a>
+
                 </x-slot>
 
                 <x-table>
                     <x-slot name="thead">
                         <th width="5%">No</th>
-                        <th>Nama Kategori</th>
+                        <th>Kode Produk</th>
+                        <th>Nama Produk</th>
+                        <th>Kategori</th>
+                        <th>Stok</th>
+                        <th>Harga</th>
                         <th width="15%" class="text-center">Aksi</th>
                     </x-slot>
                 </x-table>
@@ -34,11 +47,12 @@
         </div>
     </div>
 
-    @include('admin.kategori.form')
-    @include('admin.kategori.import')
+    @include('admin.produk.form')
+    @include('admin.produk.import')
 @endsection
 
 @include('includes.datatables')
+@include('includes.select2')
 
 @push('scripts')
     <script>
@@ -53,7 +67,7 @@
             autoWidth: false,
             responsive: true,
             ajax: {
-                url: '{{ route('kategori.data') }}',
+                url: '{{ route('produk.data') }}',
             },
             columns: [{
                     data: 'DT_RowIndex',
@@ -62,7 +76,19 @@
                     searchable: false
                 },
                 {
-                    data: 'nama'
+                    data: 'kode_produk'
+                },
+                {
+                    data: 'nama_produk'
+                },
+                {
+                    data: 'kategori'
+                },
+                {
+                    data: 'stok'
+                },
+                {
+                    data: 'harga'
                 },
                 {
                     data: 'aksi',
@@ -73,7 +99,7 @@
             ]
         })
 
-        function addForm(url, title = 'Form Data Kategori') {
+        function addForm(url, title = 'Form Data Produk') {
             $(modal).modal('show');
             $(`${modal} .modal-title`).text(title);
             $(`${modal} form`).attr('action', url);
@@ -82,7 +108,7 @@
             resetForm(`${modal} form`);
         }
 
-        function editForm(url, title = 'Form Data Kategori') {
+        function editForm(url, title = 'Form Data Produk') {
             Swal.fire({
                 title: "Memuat...",
                 text: "Mohon tunggu sebentar...",
@@ -103,6 +129,10 @@
 
                     resetForm(`${modal} form`);
                     loopForm(response.data);
+
+                    $('#kategori_id')
+                        .append(new Option(response.data.kategori.nama, response.data.kategori.id, true, true))
+                        .trigger('change');
                 })
                 .fail(errors => {
                     Swal.close(); // Tutup loading jika terjadi error
