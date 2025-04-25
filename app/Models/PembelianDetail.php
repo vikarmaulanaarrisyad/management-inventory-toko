@@ -2,9 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 class PembelianDetail extends Model
 {
-    //
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class);
+    }
+
+    public function pembelian()
+    {
+        return $this->belongsTo(Pembelian::class);
+    }
 }

@@ -71,9 +71,9 @@
                 <!-- Transaksi -->
                 <li class="nav-header">TRANSAKSI</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('pembelian.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-arrow-down"></i>
-                        <p>Stok Masuk</p>
+                        <p>Transaksi Pembelian</p>
                     </a>
                 </li>
                 <li class="nav-item">

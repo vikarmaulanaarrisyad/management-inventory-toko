@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Pembelian;
+use App\Models\PembelianDetail;
+use App\Models\Produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str; // Tambahkan ini di bagian atas file jika belum ada
 
 class PembelianController extends Controller
 {
@@ -12,15 +17,79 @@ class PembelianController extends Controller
      */
     public function index()
     {
-        //
+        return view('admin.pembelian.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function data()
+    {
+        $query = Pembelian::orderBy('id', 'DESC');
+
+        return datatables($query)
+            ->addIndexColumn()
+            ->addColumn('tanggal', function ($q) {
+                return date('d-m-Y', strtotime($q->tanggal));
+            })
+            ->addColumn('supplier', function ($q) {
+                return $q->supplier->nama_toko ?? '-';
+            })
+            ->addColumn('total_harga', function ($q) {
+                return format_uang($q->total_harga);
+            })
+            ->addColumn('status', function ($q) {
+                return '<span class="badge badge-' . $q->statusColor() . '">' . $q->status . '</span>';
+            })
+            ->addColumn('karyawan', function ($q) {
+                return $q->user->name;
+            })
+            ->addColumn('aksi', function ($q) {
+                return '
+            <button type="button" class="btn btn-success btn-sm" onclick="cetakFaktur(`' . route('pembelian.cetak_faktur', $q->id) . '`)">
+                                <i class="fas fa-print"></i>
+                            </button>
+            <button onclick="showDetail(`' . route('pembelian.show', $q->id) . '`)" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></button>
+
+                <button onclick="deleteData(`' . route('pembelian.destroy', $q->id) . '`,`' . $q->invoice_number . '`)" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+
+            ';
+            })
+            ->escapeColumns([])
+            ->make(true);
+    }
+
     public function create()
     {
-        //
+        // Check if the user already has a pending pembelian
+        $pembelian = Pembelian::where('status', 'pending')
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($pembelian) {
+            $memberSelected = Customer::find($pembelian->supplier_id);
+
+            return redirect()->route('pembeliandetail.index', [
+                'pembelian' => $pembelian->id,
+                'memberSelected' => optional($memberSelected)->id
+            ])->with([
+                'error' => true,
+                'message' => 'Transaksi pembelian sedang berlangsung'
+            ]);
+        }
+
+        // Buat invoice number random
+        $invoiceNumber = 'INV-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6));
+
+        // Create a new pembelian
+        $pembelian = new Pembelian();
+        $pembelian->tanggal = now();
+        $pembelian->user_id = Auth::id();
+        $pembelian->invoice_number = $invoiceNumber; // or 0 if needed
+        $pembelian->supplier_id = 1;    // or 0 if needed
+        $pembelian->total_item = 0;
+        $pembelian->total_harga = 0;
+        $pembelian->status = 'pending';
+        $pembelian->save();
+
+        return redirect()->route('pembeliandetail.index', ['pembelian' => $pembelian->id]);
     }
 
     /**
@@ -28,7 +97,21 @@ class PembelianController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $pembelian = Pembelian::findOrfail($request->pembelian_id);
+        $pembelian->supplier_id = $request->supplier ?? 1;
+        $pembelian->total_item = $request->total_item;
+        $pembelian->total_harga = $request->total;
+        $pembelian->status = 'success';
+        $pembelian->update();
+
+        $pembelianDetail = PembelianDetail::where('pembelian_id', $request->pembelian_id)->get();
+        foreach ($pembelianDetail as $item) {
+            $produk = Produk::findOrfail($item->produk_id);
+            $produk->stok += $item->jumlah;
+            $produk->update();
+        }
+
+        return redirect()->route('pembelian.index');
     }
 
     /**
@@ -36,16 +119,38 @@ class PembelianController extends Controller
      */
     public function show(Pembelian $pembelian)
     {
-        //
+        $query = PembelianDetail::with(['produk'])->where('pembelian_id', $pembelian->id)->get();
+
+        return datatables($query)
+            ->addIndexColumn()
+            ->addColumn('kode_produk', function ($query) {
+                return $query->produk->kode_produk;
+            })
+            ->addColumn('nama_produk', function ($query) {
+                return $query->produk->nama_produk;
+            })
+            ->addColumn('harga', function ($query) {
+                return format_uang($query->produk->harga);
+            })
+            ->addColumn('jumlah', function ($query) {
+                return format_uang($query->jumlah);
+            })
+            ->addColumn('total_harga', function ($query) {
+                return 'Rp. ' . format_uang($query->total_harga);
+            })
+            ->escapeColumns([])
+            ->make(true);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pembelian $pembelian)
+    public function cetakFaktur(Pembelian $pembelian)
     {
-        //
+        $pembelian->load('pembelianDetail');
+        return view('admin.pembelian.cetak_faktur', compact('pembelian'));
     }
+
 
     /**
      * Update the specified resource in storage.

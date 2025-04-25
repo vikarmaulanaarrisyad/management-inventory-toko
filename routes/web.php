@@ -4,6 +4,8 @@ use App\Http\Controllers\{
     CustomerController,
     DashboardController,
     KategoriController,
+    PembelianController,
+    PembelianDetailController,
     ProdukController,
     SupplierController
 };
@@ -38,6 +40,17 @@ Route::group(['middleware' => 'auth'], function () {
         // Customer
         Route::get('/customer/data', [CustomerController::class, 'data'])->name('customer.data');
         Route::post('/customer/import-excel', [CustomerController::class, 'importExcel'])->name('customer.import_excel');
-        Route::resource('/customer', CustomerController::class);
+        Route::resource('/customer', CustomerController::class)->except('create', 'edit');
+
+        // Pembelian
+        Route::get('/pembelian/data', [PembelianController::class, 'data'])->name('pembelian.data');
+        Route::get('/pembelian/{pembelian}/cetak-faktur', [PembelianController::class, 'cetakFaktur'])->name('pembelian.cetak_faktur');
+        Route::resource('/pembelian', PembelianController::class)->except('edit');
+
+        // Pembelian Detail
+        Route::get('/pembeliandetail/produk/data', [PembelianDetailController::class, 'produk'])->name('pembelian_detail.produk');
+        Route::get('/pembeliandetail/{id}/data', [PembelianDetailController::class, 'data'])->name('pembelian_detail.data');
+        Route::get('/pembeliandetail/{total}', [PembelianDetailController::class, 'loadForm'])->name('pembelian_detail.loadform');
+        Route::resource('/pembeliandetail', PembelianDetailController::class);
     });
 });
