@@ -6,6 +6,8 @@ use App\Http\Controllers\{
     KategoriController,
     PembelianController,
     PembelianDetailController,
+    PenjualanController,
+    PenjualanDetailController,
     ProdukController,
     SupplierController
 };
@@ -52,5 +54,17 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pembeliandetail/{id}/data', [PembelianDetailController::class, 'data'])->name('pembelian_detail.data');
         Route::get('/pembeliandetail/{total}', [PembelianDetailController::class, 'loadForm'])->name('pembelian_detail.loadform');
         Route::resource('/pembeliandetail', PembelianDetailController::class);
+
+        // Penjualan
+        Route::get('/penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
+        Route::get('/penjualan/{penjualan}/cetak-faktur', [PenjualanController::class, 'cetakFaktur'])->name('penjualan.cetak_faktur');
+        Route::resource('/penjualan', PenjualanController::class);
+
+        // Penjualan Detail
+        Route::get('/penjualandetail/produk/data', [PenjualanDetailController::class, 'produk'])->name('penjualandetail.produk');
+        Route::get('/penjualandetail/customer/data', [PenjualanDetailController::class, 'customer'])->name('penjualandetail.customer');
+        Route::get('/penjualandetail/{id}/data', [PenjualanDetailController::class, 'data'])->name('penjualandetail.data');
+        Route::get('/penjualandetail/{total}', [PenjualanDetailController::class, 'loadForm'])->name('penjualandetail.loadform');
+        Route::resource('/penjualandetail', PenjualanDetailController::class)->except('show');
     });
 });

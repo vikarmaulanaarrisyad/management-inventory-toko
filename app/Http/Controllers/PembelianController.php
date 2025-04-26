@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Pembelian;
 use App\Models\PembelianDetail;
 use App\Models\Produk;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str; // Tambahkan ini di bagian atas file jika belum ada
@@ -64,7 +65,7 @@ class PembelianController extends Controller
             ->first();
 
         if ($pembelian) {
-            $memberSelected = Customer::find($pembelian->supplier_id);
+            $memberSelected = Supplier::find($pembelian->supplier_id);
 
             return redirect()->route('pembeliandetail.index', [
                 'pembelian' => $pembelian->id,
@@ -83,7 +84,7 @@ class PembelianController extends Controller
         $pembelian->tanggal = now();
         $pembelian->user_id = Auth::id();
         $pembelian->invoice_number = $invoiceNumber; // or 0 if needed
-        $pembelian->supplier_id = 1;    // or 0 if needed
+        $pembelian->supplier_id = null;    // or 0 if needed
         $pembelian->total_item = 0;
         $pembelian->total_harga = 0;
         $pembelian->status = 'pending';

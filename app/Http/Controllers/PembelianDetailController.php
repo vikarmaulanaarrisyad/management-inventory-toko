@@ -147,7 +147,7 @@ class PembelianDetailController extends Controller
         $detail->total_harga = $detail->produk->harga * $request->quantity;
         $detail->update();
 
-        return response()->json(['message' => 'Detail penjualan berhasil diperbarui'], 200);
+        return response()->json(['message' => 'Detail pembelian berhasil diperbarui'], 200);
     }
 
     /**
@@ -205,6 +205,24 @@ class PembelianDetailController extends Controller
     //         ->escapeColumns([])
     //         ->make(true);
     // }
+
+    public function customer()
+    {
+        $query = Customer::all();
+
+        return datatables($query)
+            ->addIndexColumn()
+            ->editColumn('nama_toko', function ($query) {
+                return '<span class="badge badge-info">' . $query->nama_toko . '</span>';
+            })
+            ->addColumn('aksi', function ($query) {
+                return '
+                    <button type="button" class="btn btn-sm btn-danger" onclick="pilihCustomer(`' . $query->id . '`,`' . $query->nama_toko . '`)"><i class="fas fa-check-circle"></i> Pilih</button>
+                ';
+            })
+            ->escapeColumns([])
+            ->make(true);
+    }
 
 
     public function loadForm($total)

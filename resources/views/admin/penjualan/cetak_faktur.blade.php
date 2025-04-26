@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Faktur Pembelian</title>
+    <title>Faktur Penjualan</title>
     <style>
         @page {
             size: 21.5cm 14cm;
@@ -63,33 +63,33 @@
             <tr>
                 <th colspan="4" rowspan="3"
                     style="text-align: left; font-size: 18px; margin-top:0; font-weight: bold; border: none;">Faktur
-                    Pembelian Tunai
+                    Penjualan Tunai
                 </th>
                 <td style="text-align: left; border: none;">NO</td>
                 <td style="text-align: left; border: none;">:</td>
-                <td style="text-align: left; border: none;">{{ $pembelian->invoice_number }}</td>
+                <td style="text-align: left; border: none;">{{ $penjualan->invoice_number }}</td>
             </tr>
             <tr>
-                <td style="text-align: left; border: none;">Nama</td>
+                <td style="text-align: left; border: none;">Nama Toko</td>
                 <td style="text-align: left; border: none;">:</td>
-                <td style="text-align: left; border: none;">{{ $pembelian->user->name }}</td>
+                <td style="text-align: left; border: none;">{{ $penjualan->customer->nama_toko }}</td>
             </tr>
-            {{--  <tr>
+            <tr>
                 <td style="text-align: left; border: none;">Alamat</td>
                 <td style="text-align: left; border: none;">:</td>
-                <td style="text-align: left; border: none;">-</td>
-            </tr>  --}}
+                <td style="text-align: left; border: none;">{{ $penjualan->customer->alamat }}</td>
+            </tr>
         </thead>
         <tbody>
             <tr>
                 <td colspan="2" style="text-align: left; width: 10%; border: none;">Tanggal</td>
                 <td style="text-align: left; border: none;">:</td>
-                <td style="text-align: left; width: 50%; border: none;">{{ tanggal_indonesia($pembelian->tanggal) }}
+                <td style="text-align: left; width: 50%; border: none;">{{ tanggal_indonesia($penjualan->tanggal) }}
                 </td>
 
-                {{--  <td style="text-align: left; width: 20%; border: none;">Sales</td>
+                <td style="text-align: left; width: 20%; border: none;">Sales</td>
                 <td style="text-align: left; border: none;">:</td>
-                <td style="text-align: left; width: 30%; border: none;">dfafas</td>  --}}
+                <td style="text-align: left; width: 30%; border: none;">{{ $penjualan->customer->nama }}</td>
             </tr>
         </tbody>
     </table>
@@ -119,7 +119,7 @@
         </thead>
         <tbody>
             <!-- Data produk bisa diisi di sini -->
-            @foreach ($pembelian->pembelianDetail as $item)
+            @foreach ($penjualan->penjualanDetail as $item)
                 <tr>
                     <td class="no-border">{{ $loop->iteration }}</td>
                     <td class="no-border">{{ $item->produk->kode_produk }}</td>
@@ -152,13 +152,13 @@
                     <th
                         style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
                         {{--  Dua juta empat ratus empat puluh ribu Rupiah  --}}
-                        {{ ucwords(terbilang($pembelian->total_harga)) }} Rupiah
+                        {{ ucwords(terbilang($penjualan->total_harga)) }} Rupiah
 
                     </th>
                     <!-- Kolom Angka -->
                     <td
                         style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none; text-align: center;">
-                        <strong>Rp. {{ format_uang($pembelian->total_harga) }}</strong>
+                        <strong>Rp. {{ format_uang($penjualan->total_harga) }}</strong>
                     </td>
                 </tr>
             </tbody>

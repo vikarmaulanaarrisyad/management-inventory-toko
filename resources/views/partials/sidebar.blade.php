@@ -72,23 +72,17 @@
                 <li class="nav-header">TRANSAKSI</li>
                 <li class="nav-item">
                     <a href="{{ route('pembelian.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-arrow-down"></i>
+                        <i class="nav-icon fas fa-cart-plus"></i>
+
                         <p>Transaksi Pembelian</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-arrow-up"></i>
-                        <p>Stok Keluar</p>
+                    <a href="{{ route('penjualan.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-cash-register"></i>
+                        <p>Transaksi Penjualan</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-exchange-alt"></i>
-                        <p>Penyesuaian Stok</p>
-                    </a>
-                </li>
-
                 <!-- Laporan -->
                 <li class="nav-header">LAPORAN</li>
                 <li class="nav-item">
