@@ -43,16 +43,36 @@ class PembelianController extends Controller
                 return $q->user->name;
             })
             ->addColumn('aksi', function ($q) {
-                return '
+                $btn = '';
+
+                // Tombol cetak faktur hanya kalau status sukses
+                if ($q->status == 'success') {
+                    $btn .= '
             <button type="button" class="btn btn-success btn-sm" onclick="cetakFaktur(`' . route('pembelian.cetak_faktur', $q->id) . '`)">
-                                <i class="fas fa-print"></i>
-                            </button>
-            <button onclick="showDetail(`' . route('pembelian.show', $q->id) . '`)" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></button>
+                <i class="fas fa-print"></i>
+            </button>
+        ';
+                }
 
-                <button onclick="deleteData(`' . route('pembelian.destroy', $q->id) . '`,`' . $q->invoice_number . '`)" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                // Tombol lihat detail selalu muncul
+                $btn .= '
+        <button onclick="showDetail(`' . route('pembelian.show', $q->id) . '`)" class="btn btn-sm btn-info">
+            <i class="fa fa-eye"></i>
+        </button>
+    ';
 
-            ';
+                // Tombol hapus kalau status belum sukses
+                if ($q->status != 'success') {
+                    $btn .= '
+            <button onclick="deleteData(`' . route('pembelian.destroy', $q->id) . '`,`' . $q->invoice_number . '`)" class="btn btn-sm btn-danger">
+                <i class="fa fa-trash"></i>
+            </button>
+        ';
+                }
+
+                return $btn;
             })
+
             ->escapeColumns([])
             ->make(true);
     }
@@ -166,6 +186,20 @@ class PembelianController extends Controller
      */
     public function destroy(Pembelian $pembelian)
     {
-        //
+        $detail  = PembelianDetail::where('pembelian_id', $pembelian->id)->get();
+
+        foreach ($detail as $item) {
+            $produk = Produk::findOrfail($item->produk_id);
+            if ($produk) {
+                $produk->stok -= $item->quantity;
+                $produk->update();
+            }
+
+            $item->delete();
+        }
+
+        $pembelian->delete();
+
+        return response()->json(['message' => 'Data Berhasil Dihapus', 'data' => null]);
     }
 }

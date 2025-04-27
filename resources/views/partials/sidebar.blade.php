@@ -72,29 +72,41 @@
                 <li class="nav-header">TRANSAKSI</li>
                 <li class="nav-item">
                     <a href="{{ route('pembelian.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-cart-plus"></i>
-
+                        <i class="nav-icon fas fa-warehouse"></i> <!-- untuk "Data Pembelian" -->
+                        <p>Pembelian</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('pembelian.create') }}" class="nav-link">
+                        <i class="nav-icon fas fa-cart-plus"></i> <!-- untuk "Buat Transaksi Pembelian" -->
                         <p>Transaksi Pembelian</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('penjualan.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-cash-register"></i>
+                        <i class="nav-icon fas fa-store"></i> <!-- untuk "Data Penjualan" -->
+                        <p>Penjualan</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('penjualan.create') }}" class="nav-link">
+                        <i class="nav-icon fas fa-cash-register"></i> <!-- untuk "Transaksi Penjualan" -->
                         <p>Transaksi Penjualan</p>
                     </a>
                 </li>
+
                 <!-- Laporan -->
-                <li class="nav-header">LAPORAN</li>
+                {{--  <li class="nav-header">LAPORAN</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('laporan.stok') }}" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <p>Laporan Stok</p>
                     </a>
-                </li>
+                </li>  --}}
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('laporan.penjualan') }}" class="nav-link">
                         <i class="nav-icon fas fa-file-alt"></i>
-                        <p>Laporan Transaksi</p>
+                        <p>Laporan Penjualan</p>
                     </a>
                 </li>
 

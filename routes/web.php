@@ -4,6 +4,8 @@ use App\Http\Controllers\{
     CustomerController,
     DashboardController,
     KategoriController,
+    LaporanPenjualanController,
+    LaporanStokController,
     PembelianController,
     PembelianDetailController,
     PenjualanController,
@@ -66,5 +68,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/penjualandetail/{id}/data', [PenjualanDetailController::class, 'data'])->name('penjualandetail.data');
         Route::get('/penjualandetail/{total}', [PenjualanDetailController::class, 'loadForm'])->name('penjualandetail.loadform');
         Route::resource('/penjualandetail', PenjualanDetailController::class)->except('show');
+
+        // Laporan Stok
+        Route::get('/laporan/stok', [LaporanStokController::class, 'index'])->name('laporan.stok');
+
+        // Laporan Penjualan
+        Route::get('/laporan/penjualan/data', [LaporanPenjualanController::class, 'data'])->name('laporan.penjualan.data');
+        Route::get('/laporan/penjualan', [LaporanPenjualanController::class, 'index'])->name('laporan.penjualan');
     });
 });

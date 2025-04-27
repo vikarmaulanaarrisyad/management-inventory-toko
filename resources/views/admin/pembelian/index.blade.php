@@ -13,11 +13,11 @@
     <div class="row">
         <div class="col-lg-12">
             <x-card>
-                <x-slot name="header">
+                {{--  <x-slot name="header">
                     <button onclick="addForm(`{{ route('pembelian.create') }}`)" class="btn btn-sm btn-primary">
                         <i class="fas fa-plus-circle"></i> Transaksi Baru
                     </button>
-                </x-slot>
+                </x-slot>  --}}
 
                 <x-table class="pembelian">
                     <x-slot name="thead">
