@@ -8,4 +8,6 @@
 
 @section('content')
     @include('admin.dashboard.small_box')
+    @include('admin.dashboard.stok')
+    @include('admin.dashboard.grafik')
 @endsection

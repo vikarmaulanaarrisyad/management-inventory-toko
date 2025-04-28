@@ -7,6 +7,7 @@ use App\Models\Pembelian;
 use App\Models\PembelianDetail;
 use App\Models\Produk;
 use App\Models\Supplier;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str; // Tambahkan ini di bagian atas file jika belum ada
@@ -23,7 +24,10 @@ class PembelianController extends Controller
 
     public function data()
     {
-        $query = Pembelian::orderBy('id', 'DESC');
+        $user = Auth::user()->id;
+
+        $query = Pembelian::where('user_id', $user)
+            ->orderBy('id', 'DESC');
 
         return datatables($query)
             ->addIndexColumn()

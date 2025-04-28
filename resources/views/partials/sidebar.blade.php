@@ -24,6 +24,14 @@
                         class="img-circle elevation-2" style="width: 35px; height: 35px;">
                 @endif
                 --}}
+
+                @if (!empty(auth()->user()->foto) && Storage::disk('public')->exists(auth()->user()->foto))
+                    <img src="{{ Storage::url(auth()->user()->foto) }}" alt="logo" class="img-circle elevation-2"
+                        style="width: 35px; height: 35px;">
+                @else
+                    <img src="{{ asset('AdminLTE/dist/img/user1-128x128.jpg') }}" alt="logo"
+                        class="img-circle elevation-2" style="width: 35px; height: 35px;">
+                @endif
             </div>
             <div class="info">
                 <a href="{{ route('profile.show') }}" class="d-block" data-toggle="tooltip" data-placement="top"
@@ -46,88 +54,93 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
-
-                <!-- Master Data -->
-                <li class="nav-header">MASTER DATA</li>
-                <li class="nav-item">
-                    <a href="{{ route('kategori.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-tags"></i>
-                        <p>Kategori</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('produk.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-boxes"></i>
-                        <p>Data Produk</p>
-                    </a>
-                </li>
-                {{--  <li class="nav-item">
+                @if (Auth::user()->hasRole('admin'))
+                    <!-- Master Data -->
+                    <li class="nav-header">MASTER DATA</li>
+                    <li class="nav-item">
+                        <a href="{{ route('kategori.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-tags"></i>
+                            <p>Kategori</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('produk.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-boxes"></i>
+                            <p>Data Produk</p>
+                        </a>
+                    </li>
+                    {{--  <li class="nav-item">
                     <a href="{{ route('supplier.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-truck"></i>
                         <p>Data Supplier</p>
                     </a>
                 </li>  --}}
-                <li class="nav-item">
-                    <a href="{{ route('customer.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Customer</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('customer.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Customer</p>
+                        </a>
+                    </li>
+                @endif
+
                 <!-- Transaksi -->
                 <li class="nav-header">TRANSAKSI</li>
-                <li class="nav-item">
-                    <a href="{{ route('pembelian.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-warehouse"></i> <!-- untuk "Data Pembelian" -->
-                        <p>Pembelian</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('pembelian.create') }}" class="nav-link">
-                        <i class="nav-icon fas fa-cart-plus"></i> <!-- untuk "Buat Transaksi Pembelian" -->
-                        <p>Transaksi Pembelian</p>
-                    </a>
-                </li>
+
+                @if (Auth::user()->hasRole('admin'))
+                    <li class="nav-item">
+                        <a href="{{ route('pembelian.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-warehouse"></i> <!-- untuk "Data Pembelian" -->
+                            <p>Pembelian</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('pembelian.create') }}" class="nav-link">
+                            <i class="nav-icon fas fa-cart-plus"></i> <!-- untuk "Buat Transaksi Pembelian" -->
+                            <p>Transaksi Pembelian</p>
+                        </a>
+                    </li>
+                @endif
+
                 <li class="nav-item">
                     <a href="{{ route('penjualan.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-store"></i> <!-- untuk "Data Penjualan" -->
                         <p>Penjualan</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('penjualan.create') }}" class="nav-link">
-                        <i class="nav-icon fas fa-cash-register"></i> <!-- untuk "Transaksi Penjualan" -->
-                        <p>Transaksi Penjualan</p>
-                    </a>
-                </li>
 
-                <!-- Laporan -->
-                {{--  <li class="nav-header">LAPORAN</li>
-                <li class="nav-item">
-                    <a href="{{ route('laporan.stok') }}" class="nav-link">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>Laporan Stok</p>
-                    </a>
-                </li>  --}}
-                <li class="nav-item">
-                    <a href="{{ route('laporan.penjualan') }}" class="nav-link">
-                        <i class="nav-icon fas fa-file-alt"></i>
-                        <p>Laporan Penjualan</p>
-                    </a>
-                </li>
+                @if (Auth::user()->hasRole('karyawan'))
+                    <li class="nav-item">
+                        <a href="{{ route('penjualan.create') }}" class="nav-link">
+                            <i class="nav-icon fas fa-cash-register"></i> <!-- untuk "Transaksi Penjualan" -->
+                            <p>Transaksi Penjualan</p>
+                        </a>
+                    </li>
+                @endif
 
-                <!-- Pengaturan -->
-                <li class="nav-item">
-                    <a href="{{ route('user-management.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-users-cog"></i>
-                        <p>Manajemen Pengguna</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('setting.index') }}" class="nav-link">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>Setting Aplikasi</p>
-                    </a>
-                </li>
+                @if (Auth::user()->hasRole('admin'))
+                    <!-- Laporan -->
+                    <li class="nav-item">
+                        <a href="{{ route('laporan.penjualan') }}" class="nav-link">
+                            <i class="nav-icon fas fa-file-alt"></i>
+                            <p>Laporan Penjualan</p>
+                        </a>
+                    </li>
+
+                    <!-- Pengaturan -->
+                    <li class="nav-item">
+                        <a href="{{ route('user-management.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-users-cog"></i>
+                            <p>Manajemen Pengguna</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('setting.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>Setting Aplikasi</p>
+                        </a>
+                    </li>
+                @endif
+
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" id="logout-form">
                         @csrf

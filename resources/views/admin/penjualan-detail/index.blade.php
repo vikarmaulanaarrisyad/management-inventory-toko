@@ -557,7 +557,7 @@
             $('#total').val(total);
             $('#total_item').val($('.total_item').text());
 
-            $.get(`{{ url('admin/penjualandetail') }}/${total}`)
+            $.get(`{{ url('penjualandetail') }}/${total}`)
                 .done(response => {
                     $('#totalrp').val('Rp. ' + response.totalrp);
                     $('#bayarrp').val('Rp. ' + response.bayarrp);

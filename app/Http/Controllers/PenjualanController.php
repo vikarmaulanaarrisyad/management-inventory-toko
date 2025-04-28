@@ -23,7 +23,14 @@ class PenjualanController extends Controller
 
     public function data()
     {
-        $query = Penjualan::with('customer', 'user')->orderBy('id', 'desc');
+        $user = Auth::user();
+        if ($user->hasRole('karyawan')) {
+            $query = Penjualan::with('customer', 'user')
+                ->where('user_id', $user->id)
+                ->orderBy('id', 'desc');
+        }
+        $query = Penjualan::with('customer', 'user')
+            ->orderBy('id', 'desc');
 
         return datatables($query)
             ->addIndexColumn()

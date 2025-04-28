@@ -1,6 +1,6 @@
 <div class="row">
     <!-- Total Penjualan Hari Ini -->
-    <div class="col-lg-3 col-6">
+    <div class="col-lg-4 col-6">
         <div class="small-box bg-info">
             <div class="inner">
                 <h3>Rp. {{ number_format($totalPenjualanHarian, 0, ',', '.') }}</h3>
@@ -14,7 +14,7 @@
     <!-- ./col -->
 
     <!-- Produk Terlaris -->
-    <div class="col-lg-3 col-6">
+    <div class="col-lg-4 col-6">
         <div class="small-box bg-success">
             <div class="inner">
                 <h3>{{ count($produkTerlaris) }}</h3>
@@ -28,7 +28,7 @@
     <!-- ./col -->
 
     <!-- Produk Habis -->
-    <div class="col-lg-3 col-6">
+    <div class="col-lg-4 col-6">
         <div class="small-box bg-warning">
             <div class="inner">
                 <h3>{{ count($produkHabis) }}</h3>
@@ -36,20 +36,6 @@
             </div>
             <div class="icon">
                 <i class="ion ion-alert-circled"></i>
-            </div>
-        </div>
-    </div>
-    <!-- ./col -->
-
-    <!-- Total Pembelian Hari Ini -->
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-danger">
-            <div class="inner">
-                <h3>Rp. {{ number_format($totalPembelianHarian, 0, ',', '.') }}</h3>
-                <p>Total Pembelian Hari Ini</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-ios-cart-outline"></i>
             </div>
         </div>
     </div>

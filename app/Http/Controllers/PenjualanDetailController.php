@@ -180,13 +180,21 @@ class PenjualanDetailController extends Controller
                 return format_uang($query->harga);
             })
             ->addColumn('aksi', function ($query) {
+                // Memeriksa apakah stok produk kurang dari 1
+                $disabled = $query->stok < 1 ? 'disabled' : '';
+                $onclick = $query->stok < 1 ? '' : 'onclick="pilihProduk(`' . $query->id . '`,`' . $query->nama_produk . '`)"';
+
                 return '
-                    <button type="button" class="btn btn-sm btn-danger" onclick="pilihProduk(`' . $query->id . '`,`' . $query->nama_produk . '`)"><i class="fas fa-check-circle"></i> Pilih</button>
-                ';
+                <button type="button" class="btn btn-sm btn-danger ' . $disabled . '" ' . $onclick . '>
+                    <i class="fas fa-check-circle"></i> Pilih
+                </button>
+            ';
             })
             ->escapeColumns([])
             ->make(true);
     }
+
+
 
     public function customer()
     {

@@ -13,7 +13,8 @@ use App\Http\Controllers\{
     ProdukController,
     SettingController,
     SupplierController,
-    UserManagementController
+    UserManagementController,
+    UserProfileInformationController
 };
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,8 @@ Route::get('/', function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/user/profile', [UserProfileInformationController::class, 'show'])
+        ->name('profile.show');
 
     Route::group(['middleware' => 'role:admin', 'prefix' => 'admin'], function () {
         // Kategori
@@ -59,17 +62,17 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pembeliandetail/{total}', [PembelianDetailController::class, 'loadForm'])->name('pembelian_detail.loadform');
         Route::resource('/pembeliandetail', PembelianDetailController::class);
 
-        // Penjualan
-        Route::get('/penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
-        Route::get('/penjualan/{penjualan}/cetak-faktur', [PenjualanController::class, 'cetakFaktur'])->name('penjualan.cetak_faktur');
-        Route::resource('/penjualan', PenjualanController::class);
+        // // Penjualan
+        // Route::get('/penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
+        // Route::get('/penjualan/{penjualan}/cetak-faktur', [PenjualanController::class, 'cetakFaktur'])->name('penjualan.cetak_faktur');
+        // Route::resource('/penjualan', PenjualanController::class);
 
-        // Penjualan Detail
-        Route::get('/penjualandetail/produk/data', [PenjualanDetailController::class, 'produk'])->name('penjualandetail.produk');
-        Route::get('/penjualandetail/customer/data', [PenjualanDetailController::class, 'customer'])->name('penjualandetail.customer');
-        Route::get('/penjualandetail/{id}/data', [PenjualanDetailController::class, 'data'])->name('penjualandetail.data');
-        Route::get('/penjualandetail/{total}', [PenjualanDetailController::class, 'loadForm'])->name('penjualandetail.loadform');
-        Route::resource('/penjualandetail', PenjualanDetailController::class)->except('show');
+        // // Penjualan Detail
+        // Route::get('/penjualandetail/produk/data', [PenjualanDetailController::class, 'produk'])->name('penjualandetail.produk');
+        // Route::get('/penjualandetail/customer/data', [PenjualanDetailController::class, 'customer'])->name('penjualandetail.customer');
+        // Route::get('/penjualandetail/{id}/data', [PenjualanDetailController::class, 'data'])->name('penjualandetail.data');
+        // Route::get('/penjualandetail/{total}', [PenjualanDetailController::class, 'loadForm'])->name('penjualandetail.loadform');
+        // Route::resource('/penjualandetail', PenjualanDetailController::class)->except('show');
 
         // Laporan Stok
         Route::get('/laporan/stok', [LaporanStokController::class, 'index'])->name('laporan.stok');
@@ -88,5 +91,19 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/setting', 'index')->name('setting.index');
             Route::put('/setting/{setting}', 'update')->name('setting.update');
         });
+    });
+
+    Route::group(['middleware' => ['role:admin|karyawan']], function () {
+        // Penjualan
+        Route::get('/penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
+        Route::get('/penjualan/{penjualan}/cetak-faktur', [PenjualanController::class, 'cetakFaktur'])->name('penjualan.cetak_faktur');
+        Route::resource('/penjualan', PenjualanController::class);
+
+        // Penjualan Detail
+        Route::get('/penjualandetail/produk/data', [PenjualanDetailController::class, 'produk'])->name('penjualandetail.produk');
+        Route::get('/penjualandetail/customer/data', [PenjualanDetailController::class, 'customer'])->name('penjualandetail.customer');
+        Route::get('/penjualandetail/{id}/data', [PenjualanDetailController::class, 'data'])->name('penjualandetail.data');
+        Route::get('/penjualandetail/{total}', [PenjualanDetailController::class, 'loadForm'])->name('penjualandetail.loadform');
+        Route::resource('/penjualandetail', PenjualanDetailController::class)->except('show');
     });
 });
