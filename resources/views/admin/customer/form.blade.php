@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-12">
             <div class="form-group">
-                <label for="nama">Nama Supplier <span class="text-danger">*</span></label>
+                <label for="nama">Nama Customer <span class="text-danger">*</span></label>
                 <input id="nama" class="form-control" type="text" name="nama" autocomplete="off">
             </div>
         </div>
