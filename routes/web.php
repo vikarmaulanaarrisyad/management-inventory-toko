@@ -11,7 +11,8 @@ use App\Http\Controllers\{
     PenjualanController,
     PenjualanDetailController,
     ProdukController,
-    SupplierController
+    SupplierController,
+    UserManagementController
 };
 use Illuminate\Support\Facades\Route;
 
@@ -74,6 +75,11 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Laporan Penjualan
         Route::get('/laporan/penjualan/data', [LaporanPenjualanController::class, 'data'])->name('laporan.penjualan.data');
+        Route::get('laporan/penjualan/export-pdf', [LaporanPenjualanController::class, 'exportPdf'])->name('laporan.penjualan.exportPdf');
         Route::get('/laporan/penjualan', [LaporanPenjualanController::class, 'index'])->name('laporan.penjualan');
+
+        // User Management
+        Route::get('/user-management/data', [UserManagementController::class, 'data'])->name('usermanagement.data');
+        Route::resource('/user-management', UserManagementController::class);
     });
 });

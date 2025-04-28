@@ -98,7 +98,7 @@ class PembelianDetailController extends Controller
         if ($detail) {
             // Jika produk sudah ada, tambahkan jumlahnya dan perbarui subtotal
             $detail->jumlah += 1;
-            $detail->total_harga = $detail->jumlah * $detail->harga_beli;
+            $detail->total_harga = $detail->jumlah * $detail->harga;
             $detail->save();
 
             return response()->json(['message' => 'Jumlah produk berhasil diperbarui'], 200);

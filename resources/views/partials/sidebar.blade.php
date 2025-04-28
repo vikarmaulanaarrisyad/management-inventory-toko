@@ -111,13 +111,24 @@
                 </li>
 
                 <!-- Pengaturan -->
-                <li class="nav-header">PENGATURAN</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('user-management.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <p>Manajemen Pengguna</p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <form action="{{ route('logout') }}" method="POST" id="logout-form">
+                        @csrf
+                        <button type="submit" class="nav-link bg-danger mt-3 text-white text-left"
+                            style="border: none; width: 100%;">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                            <p>Logout</p>
+                        </button>
+                    </form>
+                </li>
+
             </ul>
         </nav>
     </div>
