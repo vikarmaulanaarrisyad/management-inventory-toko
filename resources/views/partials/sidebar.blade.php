@@ -1,8 +1,13 @@
 <aside class="main-sidebar elevation-4 sidebar-light-primary">
+
+    @php
+        $setting = \App\Models\Setting::first();
+    @endphp
+
     <!-- Brand Logo -->
     <a href="{{ url('/') }}" class="brand-link bg-primary">
-        <img src="" alt="Logo" class="brand-image img-circle elevation-3 bg-light" style="opacity: .8">
-        <span class="brand-text font-weight-light">Inventory App</span>
+        {{--  <img src="" alt="Logo" class="brand-image img-circle elevation-3 bg-light" style="opacity: .8">  --}}
+        <span class="brand-text font-weight-light">{{ $setting->nama_toko }}</span>
     </a>
 
     <!-- Sidebar -->
@@ -56,12 +61,12 @@
                         <p>Data Produk</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                {{--  <li class="nav-item">
                     <a href="{{ route('supplier.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-truck"></i>
                         <p>Data Supplier</p>
                     </a>
-                </li>
+                </li>  --}}
                 <li class="nav-item">
                     <a href="{{ route('customer.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-users"></i>
@@ -117,7 +122,12 @@
                         <p>Manajemen Pengguna</p>
                     </a>
                 </li>
-
+                <li class="nav-item">
+                    <a href="{{ route('setting.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-cogs"></i>
+                        <p>Setting Aplikasi</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" id="logout-form">
                         @csrf
@@ -128,7 +138,6 @@
                         </button>
                     </form>
                 </li>
-
             </ul>
         </nav>
     </div>

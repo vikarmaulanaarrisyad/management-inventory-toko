@@ -2,6 +2,10 @@
 
 @section('title', 'Login')
 
+@php
+    $setting = \App\Models\Setting::first();
+@endphp
+
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -13,20 +17,19 @@
                         <div class="row">
                             <div class="col-md-9 col-lg-8 mx-auto">
                                 <a href="{{ url('/') }}">
-                                    {{--  @if ($aplikasi->logo_login != null)
-                                        <img src="{{ Storage::url($aplikasi->logo_login) }}" alt=""
-                                            class="w-50 mb-4">
+                                    @if ($setting->logo_login != null)
+                                        <img src="{{ Storage::url($setting->logo_login) }}" alt="" class="w-50 mb-4">
                                     @else
                                         <div style="display: flex; justify-content: center;">
                                             <img style="width: 50%;" src="{{ asset('images/logo-madrasah1.png') }}"
                                                 alt="" class="mb-4">
                                         </div>
-                                    @endif  --}}
+                                    @endif
 
                                 </a>
                                 <h4 class="login-heading mb-4">Selamat Datang Kembali!</h4>
-                                {{--  <h3 class="login-heading mb-2 text-center text-success">{{ $aplikasi->singkatan }}</h3>  --}}
-                                {{--  <p class="text-success">{{ $aplikasi->nama }}</p>  --}}
+                                <h3 class="login-heading mb-2 text-center text-success">{{ $setting->nama_toko }}</h3>
+                                {{--  <p class="text-success">{{ $aplikasi->nama }}</p>
 
                                 {{-- Form --}}
                                 <form id="loginForm" action="{{ route('login') }}" method="post">

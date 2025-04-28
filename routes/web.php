@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     PenjualanController,
     PenjualanDetailController,
     ProdukController,
+    SettingController,
     SupplierController,
     UserManagementController
 };
@@ -81,5 +82,11 @@ Route::group(['middleware' => 'auth'], function () {
         // User Management
         Route::get('/user-management/data', [UserManagementController::class, 'data'])->name('usermanagement.data');
         Route::resource('/user-management', UserManagementController::class);
+
+        // Setting
+        Route::controller(SettingController::class)->group(function () {
+            Route::get('/setting', 'index')->name('setting.index');
+            Route::put('/setting/{setting}', 'update')->name('setting.update');
+        });
     });
 });

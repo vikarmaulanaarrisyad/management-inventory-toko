@@ -8,7 +8,12 @@
 
     <title>@yield('title')</title>
 
-    {{--  <link rel="icon" href="{{ Storage::url($setting->path_image ?? '') }}" type="image/*">  --}}
+    @php
+        $setting = \App\Models\Setting::first();
+    @endphp
+
+
+    <link rel="icon" href="{{ Storage::url($setting->favicon ?? '') }}" type="image/*">
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"

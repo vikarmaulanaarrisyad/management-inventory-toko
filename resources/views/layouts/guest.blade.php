@@ -7,8 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>- @yield('title')</title>
+    @php
+        $setting = \App\Models\Setting::first();
+    @endphp
 
-    <link rel="icon" href="{{ asset('/img/favicon.png') }}" type="image/*">
+
+    <link rel="icon" href="{{ Storage::url($setting->favicon ?? '') }}" type="image/*">
+
+    {{--  <link rel="icon" href="{{ asset('/img/favicon.png') }}" type="image/*">  --}}
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
@@ -41,6 +47,7 @@
         }
 
         .bg-image {
+            background-image: url('{{ Storage::url($setting->logo_login) }}');
             background-size: cover;
             background-position: center;
         }
