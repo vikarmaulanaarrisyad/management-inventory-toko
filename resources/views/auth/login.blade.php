@@ -17,8 +17,8 @@
                         <div class="row">
                             <div class="col-md-9 col-lg-8 mx-auto">
                                 <a href="{{ url('/') }}">
-                                    @if ($setting->logo_login != null)
-                                        <img src="{{ Storage::url($setting->logo_login) }}" alt="" class="w-50 mb-4">
+                                    @if ($setting->logo != null)
+                                        <img src="{{ Storage::url($setting->logo) }}" alt="" class="w-50 mb-4">
                                     @else
                                         <div style="display: flex; justify-content: center;">
                                             <img style="width: 50%;" src="{{ asset('images/logo-madrasah1.png') }}"
