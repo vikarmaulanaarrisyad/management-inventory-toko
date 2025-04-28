@@ -119,12 +119,12 @@
 
                 @if (Auth::user()->hasRole('admin'))
                     <!-- Laporan -->
-                    <li class="nav-item">
+                    {{--  <li class="nav-item">
                         <a href="{{ route('laporan.stok.index') }}" class="nav-link">
                             <i class="nav-icon fas fa-boxes"></i>
                             <p>Laporan Stok</p>
                         </a>
-                    </li>
+                    </li>  --}}
 
                     <li class="nav-item">
                         <a href="{{ route('laporan.penjualan') }}" class="nav-link">
