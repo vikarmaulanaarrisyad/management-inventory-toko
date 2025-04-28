@@ -1,5 +1,13 @@
 @extends('layouts.app')
 
+@section('title', 'Laporan Penjualan Produk')
+@section('subtitle', 'Laporan Penjualan Produk')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active">@yield('subtitle')</li>
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-lg-12">
@@ -49,10 +57,8 @@
                             <tr>
                                 <th>#</th>
                                 <th>Tanggal</th>
-                                <th>Kode Produk</th>
-                                <th>Nama Produk</th>
-                                <th>Harga</th>
-                                <th>Qty</th>
+                                <th>Invoice</th>
+                                <th>Total Item</th>
                                 <th>Total Harga</th>
                                 <th>Aksi</th>
                             </tr>
@@ -67,94 +73,125 @@
             </x-card>
         </div>
     </div>
+    @include('admin.laporan.penjualan.form')
 @endsection
 
 @include('includes.datatables')
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
-            // Initialize DataTable with AJAX request
-            var table = $('#sales-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('laporan.penjualan.data') }}',
-                    data: function(d) {
-                        d.tanggal = $('#tanggal').val();
-                        d.bulan = $('#bulan').val();
-                        d.tahun = $('#tahun').val();
-                    },
-                    dataSrc: function(json) {
-                        $('#total-omzet').text('Rp ' + json.total_omzet); // Update total omzet
-                        return json.data;
-                    }
+        let modal = '#modal-form';
+        let modalDetail = '.modal-detail';
+
+        // Initialize DataTable with AJAX request
+        let table = $('#sales-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{{ route('laporan.penjualan.data') }}',
+                data: function(d) {
+                    d.tanggal = $('#tanggal').val();
+                    d.bulan = $('#bulan').val();
+                    d.tahun = $('#tahun').val();
                 },
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
-                    {
-                        data: 'tanggal',
-                        name: 'tanggal',
-                    },
-                    {
-                        data: 'product_code',
-                        name: 'product_code',
-                        className: 'text-wrap'
-                    },
-                    {
-                        data: 'product_name',
-                        name: 'product_name',
-                        className: 'text-wrap'
-                    },
-                    {
-                        data: 'harga', // Format harga as currency
-                        name: 'harga',
-                        className: 'text-end',
-                        render: $.fn.dataTable.render.number('.', ',', 0, 'Rp ')
-                    },
-                    {
-                        data: 'quantity',
-                        name: 'quantity',
-                        className: 'text-center'
-                    },
-                    {
-                        data: 'total_harga',
-                        name: 'total_harga',
-                        className: 'text-end',
-                    },
-                    {
-                        data: 'aksi',
-                        name: 'aksi',
-                    },
-                ]
-            });
+                dataSrc: function(json) {
+                    $('#total-omzet').text('Rp ' + json.total_omzet); // Update total omzet
+                    return json.data;
+                }
+            },
+            columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center'
+                },
+                {
+                    data: 'tanggal',
+                    name: 'tanggal',
+                },
+                {
+                    data: 'invoice_number',
+                    name: 'invoice_number',
+                },
+                {
+                    data: 'total_item',
+                    name: 'total_item',
+                    className: 'text-center'
+                },
+                {
+                    data: 'total_harga',
+                    name: 'total_harga',
+                    className: 'text-end',
+                },
+                {
+                    data: 'aksi',
+                    name: 'aksi',
+                },
+            ]
+        });
 
-            // Reload table data when filter form is submitted
-            $('#filter-form').on('submit', function(e) {
-                e.preventDefault();
-                table.ajax.reload();
-            });
+        let penjualanDetail = $('.penjualan-detail').DataTable({
+            processing: true,
+            bSort: false,
+            dom: 'Brt',
+            columns: [{
+                    data: 'DT_RowIndex',
+                    searchable: false,
+                    sortable: false
+                },
+                {
+                    data: 'kode_produk',
+                },
+                {
+                    data: 'nama_produk',
+                },
+                {
+                    data: 'harga',
+                    searchable: false,
+                    sortable: false
+                },
+                {
+                    data: 'jumlah',
+                    searchable: false,
+                    sortable: false
+                },
+                {
+                    data: 'total_harga',
+                    sortable: false,
+                    searchable: false
+                },
+            ]
+        });
 
-            // Handle Print button functionality
-            $('#btnPrint').on('click', function() {
-                window.print();
-            });
+        // Reload table data when filter form is submitted
+        $('#filter-form').on('submit', function(e) {
+            e.preventDefault();
+            table.ajax.reload();
+        });
 
-            // Handle Export Excel functionality
-            $('#btnExport').on('click', function() {
-                // You can implement Export Excel functionality here
-                alert("Export Excel functionality is not yet implemented.");
-            });
+        // Handle Print button functionality
+        $('#btnPrint').on('click', function() {
+            window.print();
+        });
+
+        // Handle Export Excel functionality
+        $('#btnExport').on('click', function() {
+            // You can implement Export Excel functionality here
+            alert("Export Excel functionality is not yet implemented.");
         });
 
         // Fungsi untuk mencetak faktur
         function cetakFaktur(url) {
             window.open(url);
+        }
+
+        function showDetail(url, title = "Detail Penjualan") {
+            $(modalDetail).modal('show');
+            $(`${modalDetail} .modal-title`).text(title);
+
+            penjualanDetail.ajax.url(url);
+            penjualanDetail.ajax.reload();
         }
     </script>
 @endpush

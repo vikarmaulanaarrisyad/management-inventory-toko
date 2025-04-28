@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\PenjualanExport;
 use App\Models\Penjualan;
+use App\Models\PenjualanDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,7 +18,7 @@ class LaporanPenjualanController extends Controller
 
     public function data(Request $request)
     {
-        $query = Penjualan::with('penjualanDetail');
+        $query = Penjualan::with('penjualanDetail')->orderBy('tanggal', 'desc');
 
         if ($request->filled('tanggal')) {
             $query->whereDate('tanggal', $request->tanggal);
@@ -35,24 +36,8 @@ class LaporanPenjualanController extends Controller
 
         return datatables($query)
             ->addIndexColumn()
-            ->addColumn('product_code', function ($penjualan) {
-                return $penjualan->penjualanDetail->map(function ($detail) {
-                    return $detail->produk->kode_produk ?? '-';
-                })->implode(', ');
-            })
-            ->addColumn('product_name', function ($penjualan) {
-                return $penjualan->penjualanDetail->map(function ($detail) {
-                    return $detail->produk->nama_produk ?? '-';
-                })->implode(', ');
-            })
-            ->addColumn('harga', function ($penjualan) {
-                return $penjualan->penjualanDetail->map(function ($detail) {
-                    return $detail->produk->harga ?? '-';
-                })->implode(', ');
-            })
-
-            ->addColumn('quantity', function ($penjualan) {
-                return $penjualan->penjualanDetail->sum('jumlah');
+            ->addColumn('invoice', function ($penjualan) {
+                return $penjualan->invoice_number;
             })
             ->editColumn('total_harga', function ($penjualan) {
                 return 'Rp ' . format_uang($penjualan->total_harga);
@@ -74,6 +59,13 @@ class LaporanPenjualanController extends Controller
         </button>
         ';
                 }
+
+                // Tombol lihat detail selalu tampil
+                $btn .= '
+        <button onclick="showDetail(`' . route('penjualan.show', $q->id) . '`)" class="btn btn-sm btn-info">
+            <i class="fa fa-eye"></i>
+        </button>
+    ';
 
                 return $btn;
             })
@@ -137,5 +129,30 @@ class LaporanPenjualanController extends Controller
 
         // Meng-export ke Excel
         return Excel::download(new PenjualanExport($penjualan->get()), 'laporan_penjualan.xlsx');
+    }
+
+    public function show(Penjualan $penjualan)
+    {
+        $query = PenjualanDetail::with(['produk'])->where('penjualan_id', $penjualan->id)->get();
+
+        return datatables($query)
+            ->addIndexColumn()
+            ->addColumn('kode_produk', function ($query) {
+                return $query->produk->kode_produk;
+            })
+            ->addColumn('nama_produk', function ($query) {
+                return $query->produk->nama_produk;
+            })
+            ->addColumn('harga', function ($query) {
+                return format_uang($query->produk->harga);
+            })
+            ->addColumn('jumlah', function ($query) {
+                return format_uang($query->jumlah);
+            })
+            ->addColumn('total_harga', function ($query) {
+                return 'Rp. ' . format_uang($query->total_harga);
+            })
+            ->escapeColumns([])
+            ->make(true);
     }
 }

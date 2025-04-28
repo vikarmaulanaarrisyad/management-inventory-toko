@@ -157,7 +157,7 @@ class PenjualanController extends Controller
         $penjualanDetail = PenjualanDetail::where('penjualan_id', $request->penjualan_id)->get();
         foreach ($penjualanDetail as $item) {
             $produk = Produk::findOrfail($item->produk_id);
-            $produk->stok -= $item->quantity;
+            $produk->stok -= $item->jumlah;
             $produk->update();
         }
 

@@ -105,5 +105,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/penjualandetail/{id}/data', [PenjualanDetailController::class, 'data'])->name('penjualandetail.data');
         Route::get('/penjualandetail/{total}', [PenjualanDetailController::class, 'loadForm'])->name('penjualandetail.loadform');
         Route::resource('/penjualandetail', PenjualanDetailController::class)->except('show');
+
+        // Route::get('/laporan/stok/ajax', [LaporanStokController::class, 'data'])->name('laporan.stok.ajax');
+        // Route untuk menampilkan halaman laporan stok
+        Route::get('/laporan/stok', [LaporanStokController::class, 'index'])->name('laporan.stok.index');
+        Route::get('/laporan/stok/data/{start}/{end}', [LaporanStokController::class, 'data'])->name('laporan.stok.data');
     });
 });

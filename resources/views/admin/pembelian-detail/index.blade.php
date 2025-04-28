@@ -1,10 +1,11 @@
 @extends('layouts.app')
 
 @section('title', 'Transaksi Pembelian')
+@section('subtitle', 'Transaksi Pembelian')
 
 @section('breadcrumb')
-    @parent
-    <li class="breadcrumb-item active">Transaksi Pembelian</li>
+    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active">@yield('subtitle')</li>
 @endsection
 
 @push('css')

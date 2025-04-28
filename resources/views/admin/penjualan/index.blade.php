@@ -1,10 +1,11 @@
 @extends('layouts.app')
 
 @section('title', 'Daftar Penjualan')
+@section('subtitle', 'Daftar Penjualan')
 
 @section('breadcrumb')
-    @parent
-    <li class="breadcrumb-item active">Daftar Penjualan</li>
+    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active">@yield('subtitle')</li>
 @endsection
 
 @section('content')
@@ -25,7 +26,7 @@
                         <th>Customer</th>
                         <th>Total Item</th>
                         <th>Total Harga</th>
-                        <th>User</th>
+                        <th>Karyawan</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </x-slot>
