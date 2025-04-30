@@ -9,10 +9,7 @@ self.addEventListener("install", function (event) {
     event.waitUntil(preLoad());
 });
 
-const filesToCache = [
-    '/',
-    '/offline.html'
-];
+const filesToCache = ["/", "/offline.html"];
 
 const checkResponse = function (request) {
     return new Promise(function (fulfill, reject) {
@@ -47,10 +44,14 @@ const returnFromCache = function (request) {
 };
 
 self.addEventListener("fetch", function (event) {
-    event.respondWith(checkResponse(event.request).catch(function () {
-        return returnFromCache(event.request);
-    }));
-    if(!event.request.url.startsWith('http')){
+    event.respondWith(
+        checkResponse(event.request).catch(function () {
+            return returnFromCache(event.request);
+        })
+    );
+
+    // Hanya cache request dengan skema http/https
+    if (event.request.url.startsWith("http")) {
         event.waitUntil(addToCache(event.request));
     }
 });
