@@ -8,6 +8,7 @@ use App\Models\PenjualanDetail;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PenjualanDetailController extends Controller
 {
@@ -34,7 +35,7 @@ class PenjualanDetailController extends Controller
             $row = [];
             $row['kode_produk'] = '<span class="badge badge-info">' . $item->produk->kode_produk . '</span>';
             $row['nama_produk'] = $item->produk->nama_produk;
-            $row['harga'] = format_uang($item->produk->harga);
+            $row['harga'] = '<input type="text" onkeyup="format_uang(this); updateHarga(this)" name="harga" class="form-control input-xs harga" data-id="' . $item->id . '" value="' . format_uang($item->harga) . '">';
             $row['quantity'] = '<input type="number" name="quantity" class="form-control input-sm quantity" data-id="' . $item->id . '" min="1" value="' . $item->jumlah . '">';
 
             $row['total_harga'] = 'Rp. ' . format_uang($item->total_harga);
@@ -44,7 +45,7 @@ class PenjualanDetailController extends Controller
 
             $data[] = $row;
 
-            $total += $item->produk->harga * $item->jumlah;
+            $total += $item->harga * $item->jumlah;
             $total_item += $item->jumlah;
         }
 
@@ -64,15 +65,6 @@ class PenjualanDetailController extends Controller
             ->addIndexColumn()
             ->escapeColumns([])
             ->make(true);
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -120,22 +112,6 @@ class PenjualanDetailController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(PenjualanDetail $penjualanDetail)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PenjualanDetail $penjualanDetail)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
@@ -148,7 +124,7 @@ class PenjualanDetailController extends Controller
         }
 
         $detail->jumlah = $request->quantity;
-        $detail->total_harga = $detail->produk->harga * $request->quantity;
+        $detail->total_harga = $request->harga * $request->quantity;
         $detail->update();
 
         return response()->json(['message' => 'Detail penjualan berhasil diperbarui'], 200);
@@ -194,8 +170,6 @@ class PenjualanDetailController extends Controller
             ->make(true);
     }
 
-
-
     public function customer()
     {
         $query = Customer::all();
@@ -225,5 +199,15 @@ class PenjualanDetailController extends Controller
         ];
 
         return response()->json($data);
+    }
+
+    public function updateHarga(Request $request)
+    {
+        $detail = PenjualanDetail::findOrFail($request->id); // ID dari pembelian_detail, bukan produk
+        $detail->harga = $request->harga;
+        $detail->total_harga = $request->harga * $detail->jumlah;
+        $detail->update();
+
+        return response()->json(['status' => 'success', 'message' => 'Harga berhasil diperbarui'], 201);
     }
 }

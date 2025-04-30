@@ -94,23 +94,49 @@
                 {{-- FORM PRODUK --}}
                 <form class="form-produk">
                     @csrf
-                    <div class="form-group row align-items-center">
-                        <label for="kode_produk" class="col-12 col-md-3 col-lg-2">Nama Produk</label>
-                        <div class="col-12 col-md-9 col-lg-4">
-                            <div class="input-group">
-                                <input type="hidden" name="penjualan_id" id="penjualan_id" value="{{ $penjualan->id }}">
-                                <input type="hidden" name="produk_id" id="produk_id">
+                    <div class="form-row">
+                        <!-- Nama Produk -->
+                        <div class="form-group col-md-6 d-flex align-items-center">
+                            <label for="kode_produk" class="col-4 col-form-label">Nama Produk</label>
+                            <div class="col-8">
+                                <div class="input-group">
+                                    <input type="hidden" name="penjualan_id" id="penjualan_id"
+                                        value="{{ $penjualan->id }}">
+                                    <input type="hidden" name="produk_id" id="produk_id">
 
-                                <input id="kode_produk" class="form-control" type="text" name="kode_produk">
+                                    <input id="kode_produk" class="form-control" type="text" name="kode_produk">
+                                    <div class="input-group-append">
+                                        <button onclick="tampilProduk()" class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                                <div class="input-group-append">
-                                    <button onclick="tampilProduk()" class="btn btn-info btn-flat" type="button">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
+                        <!-- Nama Toko -->
+                        <div class="form-group col-md-6 d-flex align-items-center">
+                            <label for="nama_toko" class="col-4 col-form-label">Nama Toko</label>
+                            <div class="col-8">
+                                <div class="input-group">
+                                    <input id="nama_toko" class="form-control" type="text" onclick="tampilCustomer()">
+                                    <div class="input-group-append">
+                                        <button onclick="tampilCustomer()" class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                        <button onclick="tambahCustomer('{{ route('customer.store') }}')"
+                                            class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button onclick="resetCustomer()" class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </form>
 
                 {{-- TABEL PRODUK --}}
@@ -141,30 +167,6 @@
                             <input type="hidden" name="customer_id" id="customer_id">
                             <input type="hidden" name="total" id="total">
                             <input type="hidden" name="total_item" id="total_item">
-
-                            <div class="form-group row">
-                                <label for="nama_toko" class="col-lg-2 col-md-2 col-2 control-label">Nama Toko</label>
-                                <div class="col-lg-8 col-md-8">
-                                    <div class="input-group">
-                                        <input id="nama_toko" class="form-control" type="text"
-                                            onclick="tampilCustomer()">
-                                        <div class="input-group-append">
-                                            <button onclick="tampilCustomer()" class="btn btn-info btn-flat"
-                                                type="button"><i class="fas fa-arrow-right"></i></button>
-                                        </div>
-                                        <div class="input-group-append" id="tambahCustomer">
-                                            <button onclick="tambahCustomer('{{ route('customer.store') }}')"
-                                                class="btn btn-info btn-flat" type="button"><i
-                                                    class="fas fa-plus"></i></button>
-                                        </div>
-
-                                        <div class="input-group-append">
-                                            <button onclick="resetCustomer()" class="btn btn-info btn-flat"
-                                                type="button"><i class="fas fa-sync-alt"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             <button type="submit" class="btn btn-primary btn-block btn-simpan mt-3">
                                 <i class="fas fa-save"></i> Simpan Transaksi
@@ -208,6 +210,10 @@
             let id = $(this).data('id');
             let quantity = parseInt($(this).val());
 
+            // Ambil harga dari elemen input yang sesuai
+            let harga = parseInt($(this).closest('tr').find('.harga').val().replace(/\D/g, ''));
+
+            // Validasi jumlah quantity
             if (quantity < 1) {
                 Swal.fire({
                     icon: 'error',
@@ -234,15 +240,17 @@
                 return;
             }
 
-            // Menggunakan route() dengan menggantikan :id dengan id dari produk
+            // Update ke server
             let updateUrl = `{{ route('penjualandetail.update', ':id') }}`.replace(':id', id);
 
             $.post(updateUrl, {
                     _method: 'PUT',
                     _token: '{{ csrf_token() }}',
                     quantity,
+                    harga, // Kirim harga bersama dengan quantity
                 })
                 .done(response => {
+                    // Setelah sukses, reload DataTable
                     table1.ajax.reload();
                     table2.ajax.reload();
                     table3.ajax.reload();
@@ -259,11 +267,51 @@
                     });
                 });
         });
+    </script>
 
-        $('.btn-simpan').on('click', function() {
-            let form = $('.form-penjualan');
-            form.submit();
-        })
+    <script>
+        $('.btn-simpan').on('click', function(e) {
+            e.preventDefault(); // cegah submit biasa
+
+            Swal.fire({
+                title: 'Konfirmasi Transaksi',
+                text: "Apakah Anda yakin ingin menyimpan transaksi ini?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit form via AJAX
+                    let form = $('.form-penjualan');
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: form.attr('method'),
+                        data: form.serialize(),
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Transaksi berhasil disimpan!'
+                            }).then(() => {
+                                window.location.href =
+                                    '{{ route('penjualan.index') }}'; // Redirect ke halaman index
+                            });
+                        },
+                        error: function(xhr) {
+                            $('.btn-simpan').prop('disabled', false);
+                            let message = xhr.responseJSON?.message || 'Terjadi kesalahan.';
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops!',
+                                text: message
+                            });
+                        }
+                    });
+                }
+            });
+        });
     </script>
 
     <script>
@@ -386,7 +434,6 @@
             ],
         });
     </script>
-
 
     <script>
         function tampilProduk(title = 'Pilih Produk') {
@@ -669,6 +716,52 @@
             const penjualanId = $('#penjualan_id').val();
             // Anda bisa menggunakan window.print() atau mengarahkan ke URL faktur yang sudah di-generate
             window.open(`{{ url('admin/penjualan/faktur') }}/${penjualanId}`, '_blank');
+        }
+
+        $(document).on('input', '.harga', function() {
+            updateHarga(this);
+            table1.ajax.reload();
+        });
+    </script>
+
+    <script>
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        const debouncedUpdateHarga = debounce(function(el) {
+            let id = $(el).data('id');
+            let harga = $(el).val().replace(/\D/g, '');
+
+            $.ajax({
+                url: '{{ route('penjualandetail.update_harga') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id,
+                    harga: harga
+                },
+                success: function(res, textStatus, xhr) {
+                    if (xhr.status == 201) {
+                        table1.ajax.reload();
+                        table2.ajax.reload();
+                        table3.ajax.reload();
+                    }
+                },
+                error: function(xhr) {
+                    table1.ajax.reload();
+                    table2.ajax.reload();
+                    table3.ajax.reload();
+                }
+            });
+        }, 500); // hanya eksekusi setelah 500ms user berhenti mengetik
+
+        function updateHarga(el) {
+            debouncedUpdateHarga(el);
         }
     </script>
 @endpush

@@ -12,7 +12,7 @@ class PembelianDetailController extends Controller
 {
     public function data($id)
     {
-        $query = PembelianDetail::with(['produk', 'pembelian'])->where('pembelian_id', $id)->get();
+        $query = PembelianDetail::with(['produk', 'pembelian'])->where('pembelian_id', $id)->orderBy('id', 'desc')->get();
 
         $data = [];
         $total = 0;
@@ -22,7 +22,9 @@ class PembelianDetailController extends Controller
             $row = [];
             $row['kode_produk'] = '<span class="badge badge-info">' . $item->produk->kode_produk . '</span>';
             $row['nama_produk'] = $item->produk->nama_produk;
-            $row['harga'] = format_uang($item->produk->harga);
+            // $row['harga'] = format_uang($item->produk->harga);
+            // $row['harga'] = '<input type="text" onkeyup="format_uang(this)" name="harga" class="form-control input-xs harga" data-id="' . $item->id . '" min="0" value="' . format_uang($item->produk->harga) . '">';
+            $row['harga'] = '<input type="text" onkeyup="format_uang(this); updateHarga(this)" name="harga" class="form-control input-xs harga" data-id="' . $item->id . '" value="' . format_uang($item->harga) . '">';
             $row['quantity'] = '<input type="number" name="quantity" class="form-control input-sm quantity" data-id="' . $item->id . '" min="1" value="' . $item->jumlah . '">';
 
             $row['total_harga'] = 'Rp. ' . format_uang($item->total_harga);
@@ -62,14 +64,6 @@ class PembelianDetailController extends Controller
         $pembelian = Pembelian::where('status', 'pending')->first();
         $memberSelected = Customer::where('id', $pembelian->customer_id)->first();
         return view('admin.pembelian-detail.index', compact('pembelian', 'memberSelected'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -117,38 +111,28 @@ class PembelianDetailController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(PembelianDetail $pembelianDetail)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PembelianDetail $pembelianDetail)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
     {
         $detail = PembelianDetail::findOrFail($id);
-        $stok = $detail->produk->stok;
-        // if ($stok < $request->quantity) {
-        //     return response()->json(['message' => 'Jumlah melebihi stok maksimal ' . $stok], 422);
-        // }
-
         $detail->jumlah = $request->quantity;
         $detail->total_harga = $detail->produk->harga * $request->quantity;
         $detail->update();
 
         return response()->json(['message' => 'Detail pembelian berhasil diperbarui'], 200);
     }
+
+    public function updateHarga(Request $request)
+    {
+        $detail = PembelianDetail::findOrFail($request->id); // ID dari pembelian_detail, bukan produk
+        $detail->harga = $request->harga;
+        $detail->total_harga = $request->harga * $detail->jumlah;
+        $detail->update();
+
+        return response()->json(['message' => 'Harga berhasil diperbarui']);
+    }
+
 
     /**
      * Remove the specified resource from storage.
@@ -177,34 +161,12 @@ class PembelianDetailController extends Controller
             })
             ->addColumn('aksi', function ($query) {
                 return '
-                    <button type="button" class="btn btn-sm btn-danger" onclick="pilihProduk(`' . $query->id . '`,`' . $query->nama_produk . '`)"><i class="fas fa-check-circle"></i> Pilih</button>
+                    <button type="button" class="btn btn-xs btn-danger" onclick="pilihProduk(`' . $query->id . '`,`' . $query->nama_produk . '`)"><i class="fas fa-check-circle"></i> Pilih</button>
                 ';
             })
             ->escapeColumns([])
             ->make(true);
     }
-
-    // public function produk()
-    // {
-    //     $query = Produk::with('kategori')->get();
-
-    //     return datatables($query)
-    //         ->addIndexColumn()
-    //         ->editColumn('harga', function ($query) {
-    //             return format_uang($query->harga);
-    //         })
-    //         ->addColumn('aksi', function ($query) {
-    //             $stok = $query->stok;
-    //             $disabled = $stok == 0 ? 'disabled' : '';  // Menonaktifkan tombol jika stok 0
-    //             return '
-    //             <button type="button" class="btn btn-sm btn-danger ' . $disabled . '" onclick="pilihProduk(`' . $query->id . '`,`' . $query->nama_produk . '`)">
-    //                 <i class="fas fa-check-circle"></i> Pilih
-    //             </button>
-    //         ';
-    //         })
-    //         ->escapeColumns([])
-    //         ->make(true);
-    // }
 
     public function customer()
     {
@@ -223,7 +185,6 @@ class PembelianDetailController extends Controller
             ->escapeColumns([])
             ->make(true);
     }
-
 
     public function loadForm($total)
     {

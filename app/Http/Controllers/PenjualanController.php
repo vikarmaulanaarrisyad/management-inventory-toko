@@ -147,7 +147,23 @@ class PenjualanController extends Controller
      */
     public function store(Request $request)
     {
+        $penjualanDetail = PenjualanDetail::where('penjualan_id', $request->penjualan_id)->get();
+
+        if ($penjualanDetail->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada produk yang ditemukan.'
+            ], 400); // atau 422
+        }
         $penjualan = Penjualan::findOrfail($request->penjualan_id);
+
+        if ($request->customer_id == null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada nama toko yang ditemukan.'
+            ], 400); // atau 422
+        }
+
         $penjualan->customer_id = $request->customer_id;
         $penjualan->total_item = $request->total_item;
         $penjualan->total_harga = $request->total;
@@ -198,14 +214,6 @@ class PenjualanController extends Controller
     public function edit(Penjualan $penjualan)
     {
         return redirect()->route('penjualandetail.index', ['penjualan' => $penjualan->id]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Penjualan $penjualan)
-    {
-        //
     }
 
     /**

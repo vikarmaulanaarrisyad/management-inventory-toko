@@ -122,6 +122,15 @@ class PembelianController extends Controller
      */
     public function store(Request $request)
     {
+        $pembelianDetail = PembelianDetail::where('pembelian_id', $request->pembelian_id)->get();
+
+        if ($pembelianDetail->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada produk yang ditemukan.'
+            ], 400); // atau 422
+        }
+
         $pembelian = Pembelian::findOrfail($request->pembelian_id);
         $pembelian->supplier_id = $request->supplier ?? 1;
         $pembelian->total_item = $request->total_item;
@@ -154,8 +163,11 @@ class PembelianController extends Controller
             ->addColumn('nama_produk', function ($query) {
                 return $query->produk->nama_produk;
             })
-            ->addColumn('harga', function ($query) {
+            ->addColumn('harga_lama', function ($query) {
                 return format_uang($query->produk->harga);
+            })
+            ->addColumn('harga', function ($query) {
+                return format_uang($query->harga);
             })
             ->addColumn('jumlah', function ($query) {
                 return format_uang($query->jumlah);
@@ -174,15 +186,6 @@ class PembelianController extends Controller
     {
         $pembelian->load('pembelianDetail');
         return view('admin.pembelian.cetak_faktur', compact('pembelian'));
-    }
-
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pembelian $pembelian)
-    {
-        //
     }
 
     /**

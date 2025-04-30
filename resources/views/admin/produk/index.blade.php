@@ -11,7 +11,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-12 col-12">
             <x-card>
                 <x-slot name="header">
                     <div class="d-flex flex-wrap justify-content-start">
@@ -32,7 +32,6 @@
                         </a>
                     </div>
                 </x-slot>
-
 
                 <x-table>
                     <x-slot name="thead">

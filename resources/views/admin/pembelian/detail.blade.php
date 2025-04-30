@@ -10,8 +10,9 @@
             <x-table class="penjualan-detail">
                 <x-slot name="thead">
                     <th>No</th>
-                    <th>Kode Produk</th>
-                    <th>Nama Produk</th>
+                    <th>Kode</th>
+                    <th>Produk</th>
+                    <th>Harga Lama</th>
                     <th>Harga</th>
                     <th>Jumlah</th>
                     <th>Subtotal</th>

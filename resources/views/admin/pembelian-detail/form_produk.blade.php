@@ -6,17 +6,19 @@
     @method('POST')
 
     <div class="row">
-        <div class="col-md-12">
-            <x-table class="table-produk">
-                <x-slot name="thead">
-                    <th>No</th>
-                    <th>Kode Produk</th>
-                    <th>Nama Produk</th>
-                    <th>Harga</th>
-                    <th>Stok</th>
-                    <th>Aksi</th>
-                </x-slot>
-            </x-table>
+        <div class="col-12">
+            <div class="table-responsive">
+                <x-table class="table-produk">
+                    <x-slot name="thead">
+                        {{--  <th>No</th>  --}}
+                        <th>Kode</th>
+                        <th>Nama</th>
+                        <th>Harga</th>
+                        <th>Stok</th>
+                        <th>Aksi</th>
+                    </x-slot>
+                </x-table>
+            </div>
         </div>
     </div>
 </x-modal>

@@ -23,11 +23,11 @@
                     <x-slot name="thead">
                         <th>No</th>
                         <th>Tanggal</th>
-                        <th>Invoice</th>
+                        <th>Faktur</th>
                         <th>Total Item</th>
                         <th>Total Harga</th>
+                        <th>Sales</th>
                         <th>Status</th>
-                        <th>Karyawan</th>
                         <th>Aksi</th>
                     </x-slot>
                 </x-table>
@@ -109,6 +109,11 @@
                 },
                 {
                     data: 'nama_produk',
+                },
+                {
+                    data: 'harga_lama',
+                    searchable: false,
+                    sortable: false
                 },
                 {
                     data: 'harga',

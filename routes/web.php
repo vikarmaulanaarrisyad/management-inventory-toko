@@ -60,6 +60,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/pembeliandetail/produk/data', [PembelianDetailController::class, 'produk'])->name('pembelian_detail.produk');
         Route::get('/pembeliandetail/{id}/data', [PembelianDetailController::class, 'data'])->name('pembelian_detail.data');
         Route::get('/pembeliandetail/{total}', [PembelianDetailController::class, 'loadForm'])->name('pembelian_detail.loadform');
+        Route::post('pembelian_detail/update_harga', [PembelianDetailController::class, 'updateHarga'])->name('pembelian_detail.update_harga');
         Route::resource('/pembeliandetail', PembelianDetailController::class);
 
         // // Penjualan
@@ -104,8 +105,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/penjualandetail/customer/data', [PenjualanDetailController::class, 'customer'])->name('penjualandetail.customer');
         Route::get('/penjualandetail/{id}/data', [PenjualanDetailController::class, 'data'])->name('penjualandetail.data');
         Route::get('/penjualandetail/{total}', [PenjualanDetailController::class, 'loadForm'])->name('penjualandetail.loadform');
+        Route::post('penjualandetail/update_harga', [PenjualanDetailController::class, 'updateHarga'])->name('penjualandetail.update_harga');
         Route::resource('/penjualandetail', PenjualanDetailController::class)->except('show');
-
         // Route::get('/laporan/stok/ajax', [LaporanStokController::class, 'data'])->name('laporan.stok.ajax');
         // Route untuk menampilkan halaman laporan stok
         Route::get('/laporan/stok', [LaporanStokController::class, 'index'])->name('laporan.stok.index');

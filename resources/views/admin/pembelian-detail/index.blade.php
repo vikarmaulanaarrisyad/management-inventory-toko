@@ -58,6 +58,17 @@
             }
         }
 
+        /* Menyembunyikan elemen dengan ID tertentu di perangkat mobile (termasuk Android) */
+        @media only screen and (max-width: 767px) {
+            #DataTables_Table_1_length {
+                display: none;
+            }
+
+            .form-group>label {
+                font-weight: 100;
+                padding-top: 4px;
+            }
+        }
 
         .form-group>label {
             font-weight: 500;
@@ -86,7 +97,6 @@
         }
     </style>
 @endpush
-
 
 @section('content')
     <div class="row">
@@ -120,8 +130,8 @@
                         <th width="5%">No</th>
                         <th>Kode</th>
                         <th>Nama</th>
-                        <th>Harga</th>
-                        <th width="14%">Jumlah</th>
+                        <th width="15%">Harga</th>
+                        <th width="10%">Jumlah</th>
                         <th>Total Harga</th>
                         <th>Aksi</th>
                     </x-slot>
@@ -158,9 +168,12 @@
     </div>
 
     @include('admin.pembelian-detail.form_produk')
+    @include('admin.pembelian-detail.form_update_harga')
 @endsection
 
 @include('includes.datatables')
+
+<x-toast></x-toast>
 
 @push('scripts')
     <script>
@@ -170,14 +183,24 @@
 
         $(function() {
             $('#spinner-border').hide();
-            $('#nama_produk').focus();
+            $('#kode_produk').focus();
             $('body').addClass('sidebar-collapse');
-            $('.btn-simpan').prop('disabled', false);
+            // $('.btn-simpan').prop('disabled', true);
+            loadForm();
         });
 
-        $(document).on('input', '.quantity', function() {
-            let id = $(this).data('id');
-            let quantity = parseInt($(this).val());
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        // Fungsi update quantity yang akan dipanggil dengan debounce
+        const debouncedUpdateQuantity = debounce(function(el) {
+            let id = $(el).data('id');
+            let quantity = parseInt($(el).val());
 
             if (quantity < 1) {
                 Swal.fire({
@@ -187,7 +210,7 @@
                     showConfirmButton: false,
                     timer: 3000
                 }).then(() => {
-                    $(this).val(1);
+                    $(el).val(1);
                 });
                 return;
             }
@@ -200,12 +223,11 @@
                     showConfirmButton: false,
                     timer: 3000
                 }).then(() => {
-                    $(this).val(10000);
+                    $(el).val(10000);
                 });
                 return;
             }
 
-            // Menggunakan route() dengan menggantikan :id dengan id dari produk
             let updateUrl = `{{ route('pembeliandetail.update', ':id') }}`.replace(':id', id);
 
             $.post(updateUrl, {
@@ -226,20 +248,24 @@
                         showConfirmButton: false,
                         timer: 3000,
                     }).then(() => {
-                        $(this).val(1);
+                        $(el).val(1);
                     });
                 });
+        }, 500); // 500ms delay
+
+        // Pasang handler input
+        $(document).on('input', '.quantity', function() {
+            debouncedUpdateQuantity(this);
         });
 
-        $('.btn-simpan').on('click', function() {
-            let form = $('.form-pembelian');
-            form.submit();
-        })
+        $(document).on('input', '.harga', function() {
+            updateHarga(this);
+        });
     </script>
 
     <script>
         table1 = $('.table-pembelian').DataTable({
-            processing: false,
+            processing: true,
             serverSide: true,
             autoWidth: false,
             responsive: true,
@@ -285,7 +311,7 @@
             processing: true,
             serverSide: true,
             autoWidth: false,
-            responsive: true,
+            responsive: false,
             language: {
                 "processing": "Mohon bersabar..."
             },
@@ -293,11 +319,6 @@
                 url: '{{ route('pembelian_detail.produk') }}',
             },
             columns: [{
-                    data: 'DT_RowIndex',
-                    searchable: false,
-                    sortable: false
-                },
-                {
                     data: 'kode_produk',
                 },
                 {
@@ -320,6 +341,90 @@
                 },
             ],
         });
+
+        $('.btn-simpan').on('click', function(e) {
+            e.preventDefault(); // cegah submit biasa
+
+            Swal.fire({
+                title: 'Konfirmasi Transaksi',
+                text: "Apakah Anda yakin ingin menyimpan transaksi ini?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit form via AJAX
+                    let form = $('.form-pembelian');
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        method: form.attr('method'),
+                        data: form.serialize(),
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Transaksi berhasil disimpan!'
+                            }).then(() => {
+                                window.location.href =
+                                    '{{ route('pembelian.index') }}'; // Redirect ke halaman index
+                            });
+                        },
+                        error: function(xhr) {
+                            $('.btn-simpan').prop('disabled', true);
+                            let message = xhr.responseJSON?.message || 'Terjadi kesalahan.';
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops!',
+                                text: message
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        const debouncedUpdateHarga = debounce(function(el) {
+            let id = $(el).data('id');
+            let harga = $(el).val().replace(/\D/g, '');
+
+            $.ajax({
+                url: '{{ route('pembelian_detail.update_harga') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id,
+                    harga: harga
+                },
+                success: function(res) {
+                    table1.ajax.reload();
+                    table2.ajax.reload();
+                    table3.ajax.reload();
+                    loadForm();
+                },
+                error: function(xhr) {
+                    table1.ajax.reload();
+                    table2.ajax.reload();
+                    table3.ajax.reload();
+                    loadForm();
+                }
+            });
+        }, 500); // hanya eksekusi setelah 500ms user berhenti mengetik
+
+        function updateHarga(el) {
+            debouncedUpdateHarga(el);
+        }
     </script>
 
 
@@ -368,8 +473,8 @@
                         return;
                     }
 
-                    $('#nama_produk').focus();
-                    $('#nama_produk').val(nama);
+                    $('#kode_produk').focus();
+                    $('#kode_produk').val(nama);
                 });
 
         }
