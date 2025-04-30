@@ -25,7 +25,7 @@ class PenjualanDetailController extends Controller
 
     public function data($id)
     {
-        $query = PenjualanDetail::with(['produk', 'penjualan', 'customer'])->where('penjualan_id', $id)->get();
+        $query = PenjualanDetail::with(['produk', 'penjualan', 'customer'])->where('penjualan_id', $id)->orderBy('id', 'desc')->get();
 
         $data = [];
         $total = 0;
@@ -35,6 +35,7 @@ class PenjualanDetailController extends Controller
             $row = [];
             $row['kode_produk'] = '<span class="badge badge-info">' . $item->produk->kode_produk . '</span>';
             $row['nama_produk'] = $item->produk->nama_produk;
+            $row['stok'] = $item->produk->stok;
             $row['harga'] = '<input type="text" onkeyup="format_uang(this); updateHarga(this)" name="harga" class="form-control input-xs harga" data-id="' . $item->id . '" value="' . format_uang($item->harga) . '">';
             $row['quantity'] = '<input type="number" name="quantity" class="form-control input-sm quantity" data-id="' . $item->id . '" min="1" value="' . $item->jumlah . '">';
 
@@ -55,6 +56,7 @@ class PenjualanDetailController extends Controller
             <div class="total hide">' . $total . '</div>
             <div class="total_item hide">' . $total_item . '</div>
         ',
+            'stok' => '',
             'harga' => '',
             'quantity' => '',
             'total_harga' => '',

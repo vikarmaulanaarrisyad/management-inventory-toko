@@ -140,17 +140,21 @@
                 </form>
 
                 {{-- TABEL PRODUK --}}
-                <x-table class="table-penjualan">
-                    <x-slot name="thead">
-                        <th width="5%">No</th>
-                        <th>Kode</th>
-                        <th>Nama</th>
-                        <th>Harga</th>
-                        <th width="14%">Jumlah</th>
-                        <th>Total Harga</th>
-                        <th>Aksi</th>
-                    </x-slot>
-                </x-table>
+                <div class="table-responsive">
+                    <x-table class="table-penjualan">
+                        <x-slot name="thead">
+                            <th width="10%">No</th>
+                            <th>Kode Produk</th>
+                            <th>Nama Produk</th>
+                            <th>Stok</th>
+                            <th width="11%">Harga Jual</th>
+                            <th width="11%">Jumlah</th>
+                            <th>Total Harga</th>
+                            <th>Aksi</th>
+                        </x-slot>
+                    </x-table>
+                </div>
+
 
                 <div class="row mt-4">
                     {{-- Total dan Terbilang --}}
@@ -338,6 +342,9 @@
                     data: 'nama_produk',
                 },
                 {
+                    data: 'stok',
+                },
+                {
                     data: 'harga',
                 },
                 {
@@ -370,9 +377,9 @@
                 url: '{{ route('penjualandetail.produk') }}',
             },
             columns: [{
-                    data: 'DT_RowIndex',
-                    searchable: false,
-                    sortable: false
+                    data: 'aksi',
+                    sortable: false,
+                    searchable: false
                 },
                 {
                     data: 'kode_produk',
@@ -390,11 +397,7 @@
                     searchable: false,
                     sortable: false
                 },
-                {
-                    data: 'aksi',
-                    sortable: false,
-                    searchable: false
-                },
+
             ],
         });
 
@@ -415,6 +418,11 @@
                     sortable: false
                 },
                 {
+                    data: 'aksi',
+                    sortable: false,
+                    searchable: false
+                },
+                {
                     data: 'nama_toko',
                 },
                 {
@@ -426,11 +434,7 @@
                 {
                     data: 'nomorhp',
                 },
-                {
-                    data: 'aksi',
-                    sortable: false,
-                    searchable: false
-                },
+
             ],
         });
     </script>
