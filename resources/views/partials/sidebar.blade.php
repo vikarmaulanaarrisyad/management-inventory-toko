@@ -108,14 +108,14 @@
                     </a>
                 </li>
 
-                @if (Auth::user()->hasRole('karyawan'))
-                    <li class="nav-item">
-                        <a href="{{ route('penjualan.create') }}" class="nav-link">
-                            <i class="nav-icon fas fa-cash-register"></i> <!-- untuk "Transaksi Penjualan" -->
-                            <p>Transaksi Penjualan</p>
-                        </a>
-                    </li>
-                @endif
+                {{--  @if (Auth::user()->hasRole('karyawan') && Auth::user()->hasRole('admin'))  --}}
+                <li class="nav-item">
+                    <a href="{{ route('penjualan.create') }}" class="nav-link">
+                        <i class="nav-icon fas fa-cash-register"></i> <!-- untuk "Transaksi Penjualan" -->
+                        <p>Transaksi Penjualan</p>
+                    </a>
+                </li>
+                {{--  @endif  --}}
 
                 @if (Auth::user()->hasRole('admin'))
                     <!-- Laporan -->
@@ -144,6 +144,12 @@
                         <a href="{{ route('setting.index') }}" class="nav-link">
                             <i class="nav-icon fas fa-cogs"></i>
                             <p>Setting Aplikasi</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('backup.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-database"></i>
+                            <p>Backup & Restore</p>
                         </a>
                     </li>
                 @endif

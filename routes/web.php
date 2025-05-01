@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\{
+    BackupController,
     CustomerController,
     DashboardController,
     KategoriController,
@@ -92,6 +93,10 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/setting', 'index')->name('setting.index');
             Route::put('/setting/{setting}', 'update')->name('setting.update');
         });
+
+        Route::get('/', [BackupController::class, 'index'])->name('backup.index');
+        Route::post('/create', [BackupController::class, 'create'])->name('backup.create');
+        Route::post('/restore', [BackupController::class, 'restore'])->name('backup.restore');
     });
 
     Route::group(['middleware' => ['role:admin|karyawan']], function () {

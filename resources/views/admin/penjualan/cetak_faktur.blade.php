@@ -89,7 +89,7 @@
 
                 <td style="text-align: left; width: 20%; border: none;">Sales</td>
                 <td style="text-align: left; border: none;">:</td>
-                <td style="text-align: left; width: 30%; border: none;">{{ $penjualan->customer->nama }}</td>
+                <td style="text-align: left; width: 30%; border: none;">{{ $penjualan->user->name }}</td>
             </tr>
         </tbody>
     </table>
