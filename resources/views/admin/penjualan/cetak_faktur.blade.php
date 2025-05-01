@@ -12,7 +12,8 @@
 
         body {
             font-family: Arial, sans-serif;
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: bold
         }
 
         table {
@@ -67,7 +68,8 @@
                 </th>
                 <td style="text-align: left; border: none;">NO</td>
                 <td style="text-align: left; border: none;">:</td>
-                <td style="text-align: left; border: none;">{{ $penjualan->invoice_number }}</td>
+                <td style="text-align: left; border: none;"><span
+                        style="font-size: 12px !important;">{{ $penjualan->invoice_number }}</span></td>
             </tr>
             <tr>
                 <td style="text-align: left; border: none;">Nama Toko</td>
