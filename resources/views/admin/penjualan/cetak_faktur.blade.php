@@ -12,7 +12,7 @@
 
         body {
             font-family: Arial, sans-serif;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold
         }
 
