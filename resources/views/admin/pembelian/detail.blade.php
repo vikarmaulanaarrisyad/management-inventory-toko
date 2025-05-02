@@ -7,7 +7,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <x-table class="penjualan-detail">
+            <x-table class="pembelian-detail">
                 <x-slot name="thead">
                     <th>No</th>
                     <th>Kode</th>

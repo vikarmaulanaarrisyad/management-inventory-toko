@@ -95,7 +95,7 @@
             ],
         })
 
-        pembelianDetail = $('.penjualan-detail').DataTable({
+        pembelianDetail = $('.pembelian-detail').DataTable({
             processing: true,
             bSort: false,
             dom: 'Brt',

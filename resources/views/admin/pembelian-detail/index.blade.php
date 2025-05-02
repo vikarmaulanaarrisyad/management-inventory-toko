@@ -265,10 +265,11 @@
 
     <script>
         table1 = $('.table-pembelian').DataTable({
-            processing: true,
+            processing: false,
             serverSide: true,
             autoWidth: false,
             responsive: true,
+            pageLength: 30,
             language: {
                 "processing": "Mohon bersabar..."
             },
@@ -308,7 +309,7 @@
         });
 
         table2 = $('.table-produk').DataTable({
-            processing: true,
+            processing: false,
             serverSide: true,
             autoWidth: false,
             responsive: false,
