@@ -94,7 +94,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::put('/setting/{setting}', 'update')->name('setting.update');
         });
 
-        Route::get('/', [BackupController::class, 'index'])->name('backup.index');
+        Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
         Route::post('/create', [BackupController::class, 'create'])->name('backup.create');
         Route::post('/restore', [BackupController::class, 'restore'])->name('backup.restore');
     });

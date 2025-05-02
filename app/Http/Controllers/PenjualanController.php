@@ -119,9 +119,6 @@ class PenjualanController extends Controller
             return redirect()->route('penjualandetail.index', [
                 'penjualan' => $penjualan->id,
                 'memberSelected' => optional($memberSelected)->id
-            ])->with([
-                'error' => true,
-                'message' => 'Transaksi penjualan sedang berlangsung'
             ]);
         }
 
