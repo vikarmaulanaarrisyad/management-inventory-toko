@@ -86,6 +86,7 @@ class PembelianController extends Controller
         // Check if the user already has a pending pembelian
         $pembelian = Pembelian::where('status', 'pending')
             ->where('user_id', Auth::id())
+            ->latest('tanggal')
             ->first();
 
         if ($pembelian) {
@@ -94,9 +95,6 @@ class PembelianController extends Controller
             return redirect()->route('pembeliandetail.index', [
                 'pembelian' => $pembelian->id,
                 'memberSelected' => optional($memberSelected)->id
-            ])->with([
-                'error' => true,
-                'message' => 'Transaksi pembelian sedang berlangsung'
             ]);
         }
 
