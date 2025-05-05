@@ -142,7 +142,7 @@ class PenjualanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store1(Request $request)
     {
         $penjualanDetail = PenjualanDetail::where('penjualan_id', $request->penjualan_id)->get();
 
@@ -152,6 +152,7 @@ class PenjualanController extends Controller
                 'message' => 'Tidak ada produk yang ditemukan.'
             ], 400); // atau 422
         }
+
         $penjualan = Penjualan::findOrfail($request->penjualan_id);
 
         if ($request->customer_id == null) {
@@ -161,7 +162,15 @@ class PenjualanController extends Controller
             ], 400); // atau 422
         }
 
+        if ($request->sales_id == null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada sales yang ditemukan.'
+            ], 400); // atau 422
+        }
+
         $penjualan->customer_id = $request->customer_id;
+        $penjualan->user_id = $request->sales_id;
         $penjualan->total_item = $request->total_item;
         $penjualan->total_harga = $request->total;
         $penjualan->status = 'success';
@@ -176,6 +185,54 @@ class PenjualanController extends Controller
 
         return redirect()->route('penjualan.index');
     }
+
+    public function store(Request $request)
+    {
+        $penjualanDetail = PenjualanDetail::where('penjualan_id', $request->penjualan_id)->get();
+
+        if ($penjualanDetail->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada produk yang ditemukan.'
+            ], 400);
+        }
+
+        $penjualan = Penjualan::findOrFail($request->penjualan_id);
+
+        if ($request->customer_id == null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada nama toko yang ditemukan.'
+            ], 400);
+        }
+
+        if ($request->sales_id == null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada sales yang ditemukan.'
+            ], 400);
+        }
+
+        $penjualan->customer_id = $request->customer_id;
+        $penjualan->user_id = $request->sales_id;
+        $penjualan->total_item = $request->total_item;
+        $penjualan->total_harga = $request->total;
+        $penjualan->status = 'success';
+        $penjualan->update();
+
+        foreach ($penjualanDetail as $item) {
+            $produk = Produk::findOrFail($item->produk_id);
+            $produk->stok -= $item->jumlah;
+            $produk->update();
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transaksi berhasil disimpan!',
+            'url_faktur' => route('penjualan.cetak_faktur', $penjualan->id)
+        ]);
+    }
+
 
     /**
      * Display the specified resource.

@@ -94,7 +94,7 @@
                 {{-- FORM PRODUK --}}
                 <form class="form-produk">
                     @csrf
-                    <div class="form-row">
+                    {{--  <div class="form-row">
                         <!-- Nama Produk -->
                         <div class="form-group col-md-6 d-flex align-items-center">
                             <label for="kode_produk" class="col-4 col-form-label">Nama Produk</label>
@@ -135,7 +135,73 @@
                                 </div>
                             </div>
                         </div>
+                    </div>  --}}
+
+                    <div class="form-row">
+                        <!-- Nama Produk -->
+                        <div class="form-group col-md-6 d-flex align-items-center">
+                            <label for="kode_produk" class="col-4 col-form-label">Nama Produk</label>
+                            <div class="col-8">
+                                <div class="input-group">
+                                    <input type="hidden" name="penjualan_id" id="penjualan_id"
+                                        value="{{ $penjualan->id }}">
+                                    <input type="hidden" name="produk_id" id="produk_id">
+
+                                    <input id="kode_produk" class="form-control" type="text" name="kode_produk">
+                                    <div class="input-group-append">
+                                        <button onclick="tampilProduk()" class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nama Toko -->
+                        <div class="form-group col-md-6 d-flex align-items-center">
+                            <label for="nama_toko" class="col-4 col-form-label">Nama Toko</label>
+                            <div class="col-8">
+                                <div class="input-group">
+                                    {{--  <input type="hidden" name="customer_id" id="customer_id">  --}}
+                                    <input id="nama_toko" class="form-control" type="text" onclick="tampilCustomer()"
+                                        readonly>
+                                    <div class="input-group-append">
+                                        <button onclick="tampilCustomer()" class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                        {{--  <button onclick="tambahCustomer('{{ route('customer.store') }}')"
+                                            class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-plus"></i>
+                                        </button>  --}}
+                                        <button onclick="resetCustomer()" class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sales -->
+                        <div class="form-group col-md-6 d-flex align-items-center mt-3">
+                            <label for="nama_sales" class="col-4 col-form-label">Sales</label>
+                            <div class="col-8">
+                                <div class="input-group">
+                                    {{--  <input type="hidden" name="sales_id" id="sales_id">  --}}
+                                    <input id="nama_sales" class="form-control" type="text" onclick="tampilSales()"
+                                        readonly>
+                                    <div class="input-group-append">
+                                        <button onclick="tampilSales()" class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                        <button onclick="resetSales()" class="btn btn-info btn-flat" type="button">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
 
                 </form>
 
@@ -169,6 +235,7 @@
                             @csrf
                             <input type="hidden" name="penjualan_id" value="{{ $penjualan->id }}">
                             <input type="hidden" name="customer_id" id="customer_id">
+                            <input type="hidden" name="sales_id" id="sales_id">
                             <input type="hidden" name="total" id="total">
                             <input type="hidden" name="total_item" id="total_item">
 
@@ -190,17 +257,20 @@
     @include('admin.penjualan-detail.form_produk')
     @include('admin.penjualan-detail.form_customer')
     @include('admin.penjualan-detail.customer')
+    @include('admin.penjualan-detail.sales')
 @endsection
 
 @include('includes.datatables')
 
 @push('scripts')
     <script>
-        let table1, table2, table3;
+        let table1, table2, table3, table4;
         let modal = '#modal-form';
         let button = '#submitBtn';
         let modalCustomer = '.modal-customer';
+        let modalSales = '.modal-sales';
         let modalTambahCustomer = '.modal-tambah-customer';
+        let modalTambahSales = '.modal-tambah-sales';
 
         $(function() {
             $('#spinner-border').hide();
@@ -297,10 +367,21 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Transaksi berhasil disimpan!'
-                            }).then(() => {
-                                window.location.href =
-                                    '{{ route('penjualan.index') }}'; // Redirect ke halaman index
+                                text: response.message ||
+                                    'Transaksi berhasil disimpan!',
+                                showCancelButton: true,
+                                confirmButtonText: 'Cetak Faktur',
+                                cancelButtonText: 'Tidak',
+                            }).then((printResult) => {
+                                if (printResult.isConfirmed) {
+                                    // Jalankan fungsi cetakFaktur dengan parameter dari response
+                                    cetakFaktur(response
+                                        .url_faktur
+                                    ); // Pastikan backend mengembalikan URL faktur
+                                } else {
+                                    window.location.href =
+                                        '{{ route('penjualan.index') }}';
+                                }
                             });
                         },
                         error: function(xhr) {
@@ -315,6 +396,7 @@
                     });
                 }
             });
+
         });
     </script>
 
@@ -371,6 +453,10 @@
             serverSide: true,
             autoWidth: false,
             responsive: true,
+            lengthMenu: [
+                [10, 15, 25, 50, -1],
+                [10, 15, 25, 50, "All"]
+            ],
             language: {
                 "processing": "Mohon bersabar..."
             },
@@ -438,6 +524,39 @@
 
             ],
         });
+
+        table4 = $('.table-sales').DataTable({
+            processing: true,
+            serverSide: true,
+            autoWidth: false,
+            responsive: true,
+            language: {
+                "processing": "Mohon bersabar..."
+            },
+            ajax: {
+                url: '{{ route('penjualandetail.sales') }}',
+            },
+            columns: [{
+                    data: 'DT_RowIndex',
+                    searchable: false,
+                    sortable: false
+                },
+                {
+                    data: 'aksi',
+                    sortable: false,
+                    searchable: false
+                },
+                {
+                    data: 'name',
+                },
+                {
+                    data: 'username',
+                },
+                {
+                    data: 'email',
+                },
+            ],
+        });
     </script>
 
     <script>
@@ -449,7 +568,7 @@
         function pilihProduk(id, nama) {
             $('#produk_id').val(id);
             $('#nama_produk').val(nama);
-            hideProduk();
+            //hideProduk();
             tambahProduk(nama);
             $('.btn-simpan').prop('disabled', false);
         }
@@ -636,6 +755,11 @@
             $(`${modalCustomer} .modal-title`).text(title);
         }
 
+        function tampilSales(title = 'Pilih Sales') {
+            $(modalSales).modal('show');
+            $(`${modalSales} .modal-title`).text(title);
+        }
+
         function tambahCustomer(url, title = 'Form Tambah Customer Baru') {
             $(modalTambahCustomer).modal('show');
             $(`${modalTambahCustomer} .modal-title`).text(title);
@@ -703,6 +827,14 @@
             hideCustomer();
         }
 
+        function resetSales() {
+            $('#nama_sales').val('');
+            $('#sales_id').val('');
+            //$('#nama_toko').val('');
+            $('#diterima').val(0).focus().select();
+            hideCustomer();
+        }
+
         function pilihCustomer(id, kode) {
             $('#customer_id').val(id);
             $('#nama_toko').val(kode);
@@ -710,22 +842,46 @@
             hideCustomer();
         }
 
+        function pilihSales(id, nama_sales) {
+            $('#sales_id').val(id);
+            $('#nama_sales').val(nama_sales);
+            $('#diterima').val(0).focus().select();
+            hideSales();
+        }
+
         function hideCustomer() {
             $(modalCustomer).modal('hide');
+        }
+
+        function hideSales() {
+            $(modalSales).modal('hide');
         }
     </script>
 
     <script>
         // Fungsi untuk mencetak faktur
-        function cetakFaktur(url) {
+        function cetakFaktur1(url) {
             const penjualanId = $('#penjualan_id').val();
             // Anda bisa menggunakan window.print() atau mengarahkan ke URL faktur yang sudah di-generate
             window.open(`{{ url('admin/penjualan/faktur') }}/${penjualanId}`, '_blank');
         }
 
+        function cetakFaktur(url) {
+            var printWindow = window.open(url, '_blank');
+
+            // Setelah halaman dimuat, langsung memicu perintah print()
+            printWindow.onload = function() {
+                printWindow.print();
+                printWindow.onafterprint = function() {
+                    printWindow.close(); // Menutup jendela setelah pencetakan selesai
+                    window.location.href = '{{ route('penjualan.create') }}';
+                };
+            };
+        }
+
         $(document).on('input', '.harga', function() {
             updateHarga(this);
-            table1.ajax.reload();
+            // table1.ajax.reload();
         });
     </script>
 
@@ -755,15 +911,17 @@
                         table1.ajax.reload();
                         table2.ajax.reload();
                         table3.ajax.reload();
+                        loadForm();
                     }
                 },
                 error: function(xhr) {
                     table1.ajax.reload();
                     table2.ajax.reload();
                     table3.ajax.reload();
+                    loadForm();
                 }
             });
-        }, 500); // hanya eksekusi setelah 500ms user berhenti mengetik
+        }, 2000); // hanya eksekusi setelah 5000ms (5 detik) user berhenti mengetik
 
         function updateHarga(el) {
             debouncedUpdateHarga(el);

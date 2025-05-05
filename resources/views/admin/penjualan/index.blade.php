@@ -100,6 +100,7 @@
         penjualanDetail = $('.penjualan-detail').DataTable({
             processing: true,
             bSort: false,
+            pageLength: 30,
             dom: 'Brt',
             columns: [{
                     data: 'DT_RowIndex',
@@ -216,8 +217,22 @@
         }
 
         // Fungsi untuk mencetak faktur
-        function cetakFaktur(url) {
+        function cetakFaktur1(url) {
             window.open(url);
+        }
+
+        // Fungsi untuk mencetak faktur
+        function cetakFaktur(url) {
+            var printWindow = window.open(url, '_blank');
+
+            // Setelah halaman dimuat, langsung memicu perintah print()
+            printWindow.onload = function() {
+                printWindow.print();
+                printWindow.onafterprint = function() {
+                    printWindow.close(); // Menutup jendela setelah pencetakan selesai
+                    window.location.href = '{{ route('penjualan.create') }}';
+                };
+            };
         }
 
         function lanjutkanTransaksi(url) {
