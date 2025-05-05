@@ -124,6 +124,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
         Route::post('/backup/create', [BackupController::class, 'create'])->name('backup.create');
         Route::post('/backup/restore', [BackupController::class, 'restore'])->name('backup.restore');
+        Route::get('admin/backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
+        Route::delete('/backup/delete/{filename}', [BackupController::class, 'delete'])->name('backup.delete');
     });
 
     Route::group(['middleware' => ['role:admin|karyawan']], function () {
