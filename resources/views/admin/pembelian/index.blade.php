@@ -98,6 +98,7 @@
         pembelianDetail = $('.pembelian-detail').DataTable({
             processing: true,
             bSort: false,
+            pageLength: 30,
             dom: 'Brt',
             columns: [{
                     data: 'DT_RowIndex',

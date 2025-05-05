@@ -177,7 +177,7 @@
 
 @push('scripts')
     <script>
-        let table1, table2, table3;
+        let table1, table2;
         let modal = '#modal-form';
         let button = '#submitBtn';
 
@@ -185,7 +185,6 @@
             $('#spinner-border').hide();
             $('#kode_produk').focus();
             $('body').addClass('sidebar-collapse');
-            // $('.btn-simpan').prop('disabled', true);
             loadForm();
         });
 
@@ -238,7 +237,6 @@
                 .done(response => {
                     table1.ajax.reload();
                     table2.ajax.reload();
-                    table3.ajax.reload();
                 })
                 .fail(errors => {
                     Swal.fire({
@@ -251,7 +249,7 @@
                         $(el).val(1);
                     });
                 });
-        }, 500); // 500ms delay
+        }, 3000); // 500ms delay
 
         // Pasang handler input
         $(document).on('input', '.quantity', function() {
@@ -411,17 +409,17 @@
                 success: function(res) {
                     table1.ajax.reload();
                     table2.ajax.reload();
-                    table3.ajax.reload();
+
                     loadForm();
                 },
                 error: function(xhr) {
                     table1.ajax.reload();
                     table2.ajax.reload();
-                    table3.ajax.reload();
+
                     loadForm();
                 }
             });
-        }, 500); // hanya eksekusi setelah 500ms user berhenti mengetik
+        }, 3000); // hanya eksekusi setelah 500ms user berhenti mengetik
 
         function updateHarga(el) {
             debouncedUpdateHarga(el);
@@ -438,7 +436,7 @@
         function pilihProduk(id, nama) {
             $('#produk_id').val(id);
             $('#nama_produk').val(nama);
-            hideProduk();
+            //hideProduk();
             tambahProduk(nama);
             $('.btn-simpan').prop('disabled', false);
         }
@@ -449,14 +447,14 @@
                     if (response.status = 200) {
                         table1.ajax.reload();
                         table2.ajax.reload();
-                        table3.ajax.reload();
+
                         $('#nama_produk').focus();
                     }
                 })
                 .fail(errors => {
                     table1.ajax.reload();
                     table2.ajax.reload();
-                    table3.ajax.reload();
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Opps! Gagal',
@@ -509,7 +507,7 @@
                             $(button).prop('disabled', false);
                             $('#spinner-border').hide();
 
-                            table3.ajax.reload();
+
                         })
                     }
                 })
@@ -566,7 +564,7 @@
                                 }).then(() => {
                                     table1.ajax.reload();
                                     table2.ajax.reload();
-                                    table3.ajax.reload();
+
                                 })
                             }
                         },
@@ -581,7 +579,7 @@
                                 // Refresh tabel atau lakukan operasi lain yang diperlukan
                                 table1.ajax.reload();
                                 table2.ajax.reload();
-                                table3.ajax.reload();
+
                             });
                         }
                     });

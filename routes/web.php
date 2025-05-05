@@ -23,6 +23,31 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('/manifest.json', function () {
+    $env = env('APP_ENV_TYPE', 'production');
+
+    return response()->json([
+        'name' => $env === 'staging' ? 'Multazam Staging' : 'Multazam',
+        'short_name' => env('APP_SHORT_NAME', 'multazam'),
+        'start_url' => '/index.php',
+        'background_color' => '#6777ef',
+        'description' => env('APP_DESCRIPTION'),
+        'display' => 'fullscreen',
+        'theme_color' => '#6777ef',
+        'env_type' => $env,
+        'icons' => [
+            [
+                'src' => asset('logo.png'),
+                'sizes' => '512x512',
+                'type' => 'image/png',
+                'purpose' => 'any maskable'
+            ]
+        ],
+    ])->header('Content-Type', 'application/manifest+json');
+});
+
+
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/user/profile', [UserProfileInformationController::class, 'show'])
@@ -95,8 +120,8 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
-        Route::post('/create', [BackupController::class, 'create'])->name('backup.create');
-        Route::post('/restore', [BackupController::class, 'restore'])->name('backup.restore');
+        Route::post('/backup/create', [BackupController::class, 'create'])->name('backup.create');
+        Route::post('/backup/restore', [BackupController::class, 'restore'])->name('backup.restore');
     });
 
     Route::group(['middleware' => ['role:admin|karyawan']], function () {
@@ -108,6 +133,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Penjualan Detail
         Route::get('/penjualandetail/produk/data', [PenjualanDetailController::class, 'produk'])->name('penjualandetail.produk');
         Route::get('/penjualandetail/customer/data', [PenjualanDetailController::class, 'customer'])->name('penjualandetail.customer');
+        Route::get('/penjualandetail/sales/data', [PenjualanDetailController::class, 'sales'])->name('penjualandetail.sales');
         Route::get('/penjualandetail/{id}/data', [PenjualanDetailController::class, 'data'])->name('penjualandetail.data');
         Route::get('/penjualandetail/{total}', [PenjualanDetailController::class, 'loadForm'])->name('penjualandetail.loadform');
         Route::post('penjualandetail/update_harga', [PenjualanDetailController::class, 'updateHarga'])->name('penjualandetail.update_harga');

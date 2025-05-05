@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
 use App\Models\Produk;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -185,6 +186,29 @@ class PenjualanDetailController extends Controller
                 return '
                     <button type="button" class="btn btn-sm btn-danger" onclick="pilihCustomer(`' . $query->id . '`,`' . $query->nama_toko . '`)"><i class="fas fa-check-circle"></i> Pilih</button>
                 ';
+            })
+            ->escapeColumns([])
+            ->make(true);
+    }
+
+    public function sales()
+    {
+        // Ambil user dengan role "karyawan" saja
+        $query = User::whereHas('roles', function ($q) {
+            $q->where('name', 'karyawan');
+        });
+
+        return datatables($query)
+            ->addIndexColumn()
+            ->editColumn('name', function ($query) {
+                return '<span class="badge badge-info">' . $query->name . '</span>';
+            })
+            ->addColumn('aksi', function ($query) {
+                return '
+                <button type="button" class="btn btn-sm btn-danger" onclick="pilihSales(`' . $query->id . '`,`' . $query->name . '`)">
+                    <i class="fas fa-check-circle"></i> Pilih
+                </button>
+            ';
             })
             ->escapeColumns([])
             ->make(true);
