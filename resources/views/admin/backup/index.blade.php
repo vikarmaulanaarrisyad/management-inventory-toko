@@ -33,10 +33,26 @@
         <h5>Daftar File Backup:</h5>
         <ul class="list-group">
             @forelse($files as $file)
-                <li class="list-group-item">{{ basename($file) }}</li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ basename($file) }}
+                    <div class="btn-group">
+                        <a href="{{ route('backup.download', basename($file)) }}" class="btn btn-sm btn-success">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                        <form action="{{ route('backup.delete', basename($file)) }}" method="POST"
+                            onsubmit="return confirm('Yakin ingin menghapus file ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash-alt"></i> Hapus
+                            </button>
+                        </form>
+                    </div>
+                </li>
             @empty
                 <li class="list-group-item text-muted">Belum ada file backup.</li>
             @endforelse
+
         </ul>
     </div>
 @endsection
