@@ -26,14 +26,18 @@ Route::get('/', function () {
 Route::get('/manifest.json', function () {
     $env = env('APP_ENV_TYPE', 'production');
 
+    // Tentukan warna berdasarkan environment
+    $backgroundColor = $env === 'staging' ? '#ffeb3b' : '#6777ef';  // Contoh warna untuk staging (kuning) dan production (biru)
+    $themeColor = $env === 'staging' ? '#ffeb3b' : '#6777ef';
+
     return response()->json([
         'name' => $env === 'staging' ? 'Multazam Staging' : 'Multazam',
         'short_name' => env('APP_SHORT_NAME', 'multazam'),
         'start_url' => '/index.php',
-        'background_color' => '#6777ef',
+        'background_color' => $backgroundColor,
         'description' => env('APP_DESCRIPTION'),
         'display' => 'fullscreen',
-        'theme_color' => '#6777ef',
+        'theme_color' => $themeColor,
         'env_type' => $env,
         'icons' => [
             [
@@ -45,8 +49,6 @@ Route::get('/manifest.json', function () {
         ],
     ])->header('Content-Type', 'application/manifest+json');
 });
-
-
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
