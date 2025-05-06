@@ -7,7 +7,7 @@
     <style>
         @page {
             size: 21cm 14cm;
-            margin: 0.8cm;
+            margin: 0.5cm;
         }
 
         html,
@@ -19,7 +19,7 @@
 
         body {
             font-family: 'Calibri', sans-serif;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
         }
 
@@ -63,7 +63,7 @@
         }
 
         .signature {
-            margin-top: 10px;
+            margin-top: 8px;
             display: flex;
             justify-content: space-between;
         }
@@ -74,7 +74,7 @@
         }
 
         .terbilang {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             padding-left: 2px;
             margin: 0;
@@ -85,17 +85,17 @@
 <body>
     <div class="page-wrapper">
         <div class="content">
-            <table style="width:100%; border-collapse: collapse; margin-bottom: 2px;">
+            <table style="width:100%; border-collapse: collapse; margin-bottom: 1px;">
                 <thead>
                     <tr>
                         <th colspan="4" rowspan="3"
-                            style="text-align: left; font-size: 18px;font-weight: bold; border: none;">
+                            style="text-align: left; font-size: 17px;font-weight: bold; border: none;">
                             FAKTUR PENJUALAN TUNAI
                         </th>
                         <td style="text-align: left; border: none;">NO</td>
                         <td style="text-align: left; border: none;  padding-right:5px;">: </td>
                         <td style="text-align: left; border: none;"><span
-                                style="font-size: 18px !important;">{{ $penjualan->invoice_number }}</span></td>
+                                style="font-size: 17px !important;">{{ $penjualan->invoice_number }}</span></td>
                     </tr>
                     <tr>
                         <td style="text-align: left; border: none;">Nama Toko</td>
@@ -197,7 +197,7 @@
                 <tbody>
                     @foreach ($penjualan->penjualanDetail as $item)
                         <tr>
-                            <td class="no-border">{{ $loop->iteration }}</td>
+                            <td class="no-border" style="padding-left:10px;">{{ $loop->iteration }}</td>
                             <td class="no-border">{{ $item->produk->kode_produk }}</td>
                             <td class="no-border">{{ $item->produk->nama_produk ?? '' }}</td>
                             <td class="center no-border">{{ $item->jumlah }}</td>
@@ -212,7 +212,7 @@
                                 <div style="display: flex; justify-content: space-between; width: 100%;">
                                     <span style="width: 10px;margin-left: 20px;">Rp</span>
                                     <span
-                                        style="margin-left: 0px; text-align: right;">{{ number_format($item->harga * $item->jumlah, 0, ',', '.') }}</span>
+                                        style="margin-left: 0px; text-align: right; padding-right:20px;">{{ number_format($item->harga * $item->jumlah, 0, ',', '.') }}</span>
                                 </div>
                             </td>
                         </tr>
@@ -228,8 +228,8 @@
                 <tbody>
                     <tr>
                         <td
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none; width: 5%;">
-                            <strong>Terbilang</strong>
+                            style="padding-left:10px; border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none; width: 5%;">
+                            <strong class="terbilang">Terbilang</strong>
                         </td>
                         <td
                             style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none; width: 2%; text-align: center;">
@@ -239,14 +239,15 @@
                             style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
                             <div class="terbilang">
                                 {{ ucwords(terbilang($penjualan->total_harga)) }} Rupiah &nbsp;&nbsp;&nbsp;
-                                <strong style="float: right;">Rp {{ format_uang($penjualan->total_harga) }}</strong>
+                                <strong style="float: right; padding-right:20px;">Rp
+                                    {{ format_uang($penjualan->total_harga) }}</strong>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
 
-            <div style="text-align: center; margin-top: 50px;">
+            <div style="text-align: center; margin-top: 30px;">
                 <table style="width: 60%; margin: 0 auto; border-collapse: collapse;">
                     <tr>
                         <td style="border: none; text-align: center;">(...........................................)</td>

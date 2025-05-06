@@ -7,7 +7,7 @@
     <style>
         @page {
             size: 21cm 14cm;
-            margin: 0.8cm;
+            margin: 0.9cm;
         }
 
         html,
@@ -19,7 +19,7 @@
 
         body {
             font-family: 'Calibri', sans-serif;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
         }
 
@@ -36,7 +36,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 5px;
+            margin-top: 2px;
         }
 
         th,
@@ -63,7 +63,7 @@
         }
 
         .signature {
-            margin-top: 10px;
+            margin-top: 2px;
             display: flex;
             justify-content: space-between;
         }
@@ -74,7 +74,7 @@
         }
 
         .terbilang {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: bold;
             padding-left: 2px;
             margin: 0;
@@ -241,7 +241,7 @@
                 </tbody>
             </table>
 
-            <div style="text-align: center; margin-top: 50px;">
+            <div style="text-align: center; margin-top: 20px;">
                 <table style="width: 60%; margin: 0 auto; border-collapse: collapse;">
                     <tr>
                         <td style="border: none; text-align: center;">(...........................................)</td>
