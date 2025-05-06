@@ -7,7 +7,7 @@
     <style>
         @page {
             size: 21cm 14cm;
-            margin: 0.2cm;
+            margin: 0.8cm;
         }
 
         html,
