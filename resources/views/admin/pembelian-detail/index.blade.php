@@ -106,6 +106,7 @@
                 <form class="form-produk">
                     @csrf
                     <div class="form-group row align-items-center">
+                        <!-- Nama Produk -->
                         <label for="kode_produk" class="col-12 col-md-3 col-lg-2">Nama Produk</label>
                         <div class="col-12 col-md-9 col-lg-4">
                             <div class="input-group">
@@ -121,7 +122,23 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Nama Toko -->
+                        <label for="input_nama_toko" class="col-12 col-md-3 col-lg-2">Nama Toko</label>
+                        <div class="col-12 col-md-9 col-lg-4">
+                            <input type="text" id="input_nama_toko" name="nama_toko" class="form-control"
+                                autocomplete="off">
+                        </div>
                     </div>
+
+                    <div class="form-group row align-items-center">
+                        <!-- Alamat -->
+                        <label for="input_alamat" class="col-6 col-md-3 col-lg-2">Alamat</label>
+                        <div class="col-6 col-md-6 col-lg-6">
+                            <textarea id="input_alamat" name="alamat" class="form-control" rows="2" autocomplete="off"></textarea>
+                        </div>
+                    </div>
+
                 </form>
 
                 {{-- TABEL PRODUK --}}
@@ -151,15 +168,12 @@
                             <input type="hidden" name="pembelian_id" value="{{ $pembelian->id }}">
                             <input type="hidden" name="total" id="total">
                             <input type="hidden" name="total_item" id="total_item">
+                            <input type="hidden" name="nama_toko" id="nama_toko">
+                            <input type="hidden" name="alamat" id="alamat">
 
                             <button type="submit" class="btn btn-primary btn-block btn-simpan mt-3">
                                 <i class="fas fa-save"></i> Simpan Transaksi
                             </button>
-
-                            <!-- Tombol Cetak Faktur -->
-                            {{--  <button type="button" class="btn btn-success btn-block mt-3" onclick="cetakFaktur()">
-                                <i class="fas fa-print"></i> Cetak Transaksi Faktur
-                            </button>  --}}
                         </form>
                     </div>
                 </div>
@@ -343,6 +357,8 @@
 
         $('.btn-simpan').on('click', function(e) {
             e.preventDefault(); // cegah submit biasa
+            $('#nama_toko').val($('#input_nama_toko').val());
+            $('#alamat').val($('#input_alamat').val());
 
             Swal.fire({
                 title: 'Konfirmasi Transaksi',
@@ -371,7 +387,7 @@
                             });
                         },
                         error: function(xhr) {
-                            $('.btn-simpan').prop('disabled', true);
+                            $('.btn-simpan').prop('disabled', false);
                             let message = xhr.responseJSON?.message || 'Terjadi kesalahan.';
                             Swal.fire({
                                 icon: 'error',
@@ -506,8 +522,6 @@
                         }).then(() => {
                             $(button).prop('disabled', false);
                             $('#spinner-border').hide();
-
-
                         })
                     }
                 })

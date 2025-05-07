@@ -120,6 +120,7 @@ class PembelianController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $pembelianDetail = PembelianDetail::where('pembelian_id', $request->pembelian_id)->get();
 
         if ($pembelianDetail->isEmpty()) {
@@ -129,8 +130,24 @@ class PembelianController extends Controller
             ], 400); // atau 422
         }
 
+        if (!$request->nama_toko) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada Nama Toko yang ditemukan.'
+            ], 400); // atau 422
+        }
+
+        if (!$request->alamat) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada Alamat Toko yang ditemukan.'
+            ], 400); // atau 422
+        }
+
         $pembelian = Pembelian::findOrfail($request->pembelian_id);
         $pembelian->supplier_id = $request->supplier ?? 1;
+        $pembelian->nama_toko = $request->nama_toko ?? '';
+        $pembelian->alamat = $request->alamat ?? '';
         $pembelian->total_item = $request->total_item;
         $pembelian->total_harga = $request->total;
         $pembelian->status = 'success';

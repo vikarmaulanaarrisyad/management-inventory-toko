@@ -92,10 +92,10 @@
                             style="text-align: left; font-size: 18px;font-weight: bold; border: none;">
                             FAKTUR PEMBELIAN TUNAI
                         </th>
-                        <td style="text-align: left; border: none;">NO</td>
+                        <td style="text-align: left; border: none;">Nama Toko</td>
                         <td style="text-align: left; border: none;  padding-right:5px;">: </td>
                         <td style="text-align: left; border: none;"><span
-                                style="font-size: 18px !important;">{{ $pembelian->invoice_number }}</span></td>
+                                style="font-size: 18px !important;">{{ $pembelian->nama_toko ?? '' }}</span></td>
                     </tr>
                     <tr>
                         <td style="text-align: left; border: none;"></td>
@@ -112,9 +112,9 @@
                             {{ tanggal_indonesia($pembelian->tanggal) }}
                         </td>
 
-                        <td style="text-align: left; width: 20%; border: none;">Sales</td>
+                        <td style="text-align: left; width: 20%; border: none;">Alamat</td>
                         <td style="text-align: left; border: none;">: </td>
-                        <td style="text-align: left; width: 30%; border: none;">{{ $pembelian->user->name }}</td>
+                        <td style="text-align: left; width: 30%; border: none;">{{ $pembelian->alamat ?? '' }}</td>
                     </tr>
                 </tbody>
             </table>
