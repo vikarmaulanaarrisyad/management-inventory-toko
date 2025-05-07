@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('backup_histories', function (Blueprint $table) {
-            $table->id();
-            $table->string('file_name');
-            $table->string('type'); // backup / restore
-            $table->timestamps();
+        Schema::table('pembelians', function (Blueprint $table) {
+            $table->string('nama_toko')->nullable();
+            $table->string('alamat')->nullable();
         });
     }
 
@@ -24,6 +22,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('backup_histories');
+        Schema::table('pembelians', function (Blueprint $table) {
+            $table->dropColumn([
+                'nama_toko',
+                'alamat'
+            ]);
+        });
     }
 };
