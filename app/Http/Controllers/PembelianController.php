@@ -10,7 +10,8 @@ use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str; // Tambahkan ini di bagian atas file jika belum ada
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PembelianController extends Controller
 {
@@ -24,10 +25,7 @@ class PembelianController extends Controller
 
     public function data()
     {
-        $user = Auth::user()->id;
-
-        $query = Pembelian::where('user_id', $user)
-            ->orderBy('id', 'DESC');
+        $query = Pembelian::with('supplier', 'user')->orderBy('id', 'DESC');
 
         return datatables($query)
             ->addIndexColumn()
@@ -145,22 +143,30 @@ class PembelianController extends Controller
         }
 
         $pembelian = Pembelian::findOrfail($request->pembelian_id);
-        $pembelian->supplier_id = $request->supplier ?? 1;
-        $pembelian->nama_toko = $request->nama_toko ?? '';
-        $pembelian->alamat = $request->alamat ?? '';
-        $pembelian->total_item = $request->total_item;
-        $pembelian->total_harga = $request->total;
-        $pembelian->status = 'success';
-        $pembelian->update();
 
-        $pembelianDetail = PembelianDetail::where('pembelian_id', $request->pembelian_id)->get();
-        foreach ($pembelianDetail as $item) {
-            $produk = Produk::findOrfail($item->produk_id);
-            $produk->stok += $item->jumlah;
-            $produk->update();
+        DB::beginTransaction();
+        try {
+            $pembelian->supplier_id = $request->supplier ?? 1;
+            $pembelian->nama_toko = $request->nama_toko ?? '';
+            $pembelian->alamat = $request->alamat ?? '';
+            $pembelian->total_item = $request->total_item;
+            $pembelian->total_harga = $request->total;
+            $pembelian->status = 'success';
+            $pembelian->update();
+
+            $pembelianDetail = PembelianDetail::where('pembelian_id', $request->pembelian_id)->get();
+            foreach ($pembelianDetail as $item) {
+                $produk = Produk::findOrfail($item->produk_id);
+                $produk->stok += $item->jumlah;
+                $produk->update();
+            }
+
+            DB::commit();
+            return redirect()->route('pembelian.index')->with('success', 'Transaksi pembelian berhasil disimpan!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem saat menyimpan transaksi pembelian.');
         }
-
-        return redirect()->route('pembelian.index');
     }
 
     /**

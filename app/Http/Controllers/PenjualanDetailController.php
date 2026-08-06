@@ -18,7 +18,14 @@ class PenjualanDetailController extends Controller
      */
     public function index()
     {
-        $penjualan = Penjualan::where('status', 'pending')->first();
+        $penjualan = Penjualan::where('status', 'pending')
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$penjualan) {
+            return redirect()->route('penjualan.index')->with('error', 'Tidak ada transaksi yang sedang berlangsung.');
+        }
+
         $customer = Customer::where('id', $penjualan->customer_id)->first();
 
         return view('admin.penjualan-detail.index', compact('penjualan', 'customer'));

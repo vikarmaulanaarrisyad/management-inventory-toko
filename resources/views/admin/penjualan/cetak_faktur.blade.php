@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <title>Faktur Penjualan</title>
@@ -10,44 +9,32 @@
             margin: 0.5cm;
         }
 
-        html,
         body {
-            height: 100%;
+            font-family: 'Calibri', 'Helvetica', sans-serif;
+            font-size: 14px;
             margin: 0;
             padding: 0;
-        }
-
-        body {
-            font-family: 'Calibri', sans-serif;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .page-wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100%;
-        }
-
-        .content {
-            flex: 1;
+            margin-bottom: 100px; /* Space for the fixed footer */
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 5px;
         }
 
-        th,
-        td {
-            border: 1px solid #000;
-            padding: 0px;
-            text-align: left;
-        }
-
-        .no-border {
+        .header-table td {
             border: none;
+            padding: 2px 0;
+        }
+
+        .item-table th,
+        .item-table td {
+            border: 1px solid #000;
+            padding: 4px 5px;
+        }
+
+        .item-table th {
+            text-align: center;
         }
 
         .center {
@@ -59,219 +46,135 @@
         }
 
         .footer {
-            margin-top: auto;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 90px;
         }
 
-        .signature {
-            margin-top: 8px;
-            display: flex;
-            justify-content: space-between;
+        .currency-symbol {
+            float: left;
         }
 
-        .signature div {
-            width: 30%;
-            text-align: center;
+        .currency-value {
+            float: right;
         }
-
-        .terbilang {
-            font-size: 18px;
-            font-weight: bold;
-            padding-left: 2px;
-            margin: 0;
+        
+        .clearfix {
+            clear: both;
         }
     </style>
 </head>
-
 <body>
-    <div class="page-wrapper">
-        <div class="content">
-            <table style="width:100%; border-collapse: collapse; margin-bottom: 1px;">
-                <thead>
-                    <tr>
-                        <th colspan="4" rowspan="3"
-                            style="text-align: left; font-size: 17px;font-weight: bold; border: none;">
-                            FAKTUR PENJUALAN TUNAI
-                        </th>
-                        <td style="text-align: left; border: none;">NO</td>
-                        <td style="text-align: left; border: none;  padding-right:5px;">: </td>
-                        <td style="text-align: left; border: none;"><span
-                                style="font-size: 17px !important;">{{ $penjualan->invoice_number }}</span></td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: left; border: none;">Nama Toko</td>
-                        <td style="text-align: left; border: none; padding-right:5px;">: </td>
-                        <td style="text-align: left; border: none;">{{ $penjualan->customer->nama_toko }}</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: left; border: none;">Alamat</td>
-                        <td style="text-align: left; border: none; padding-right:5px;">: </td>
-                        <td style="text-align: left; border: none;">{{ $penjualan->customer->alamat }}</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="2" style="text-align: left; width: 10%; border: none;">Tanggal</td>
-                        <td style="text-align: center; border: none; padding-right: 20px;">:</td>
-
-                        <td style="text-align: left; width: 40%; border: none;">
-                            {{ tanggal_indonesia($penjualan->tanggal) }}
-                        </td>
-
-                        <td style="text-align: left; width: 20%; border: none;">Sales</td>
-                        <td style="text-align: left; border: none;">: </td>
-                        <td style="text-align: left; width: 30%; border: none;">{{ $penjualan->user->name }}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            {{--  <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <th
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            No</th>
-                        <th
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Kode</th>
-                        <th
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Nama Produk</th>
-                        <th class="center"
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Qty</th>
-                        <th class="center"
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Harga</th>
-                        <th class="center"
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($penjualan->penjualanDetail as $item)
+    <div class="content">
+        <!-- Header -->
+        <table class="header-table" style="margin-bottom: 10px;">
+            <tr>
+                <td style="width: 55%; vertical-align: top;">
+                    <h2 style="margin: 0; font-size: 18px; text-transform: uppercase;">FAKTUR PENJUALAN TUNAI</h2>
+                </td>
+                <td style="width: 45%; vertical-align: top;">
+                    <table style="width: 100%;">
                         <tr>
-                            <td class="no-border">{{ $loop->iteration }}</td>
-                            <td class="no-border">{{ $item->produk->kode_produk }}</td>
-                            <td class="no-border">{{ $item->produk->nama_produk ?? '' }}</td>
-                            <td class="center no-border">{{ $item->jumlah }}</td>
-                            <td class="right no-border">
-                                <div style="display: flex; justify-content: flex-start;">
-                                    <span style="width: 30px;">Rp</span>
-                                    <span>{{ number_format($item->harga, 0, ',', '.') }}</span>
-                                </div>
-                            </td>
-                            <td class="right no-border">
-                                <div style="display: flex; justify-content: flex-start;">
-                                    <span style="width: 30px;">Rp</span>
-                                    <span>{{ number_format($item->harga * $item->jumlah, 0, ',', '.') }}</span>
-                                </div>
-                            </td>
+                            <td style="width: 25%;">NO</td>
+                            <td style="width: 5%;">:</td>
+                            <td><strong>{{ $penjualan->invoice_number }}</strong></td>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>  --}}
-
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <th
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            No</th>
-                        <th
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Kode</th>
-                        <th
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Nama Produk</th>
-                        <th class="center"
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Qty</th>
-                        <th class="center"
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Harga</th>
-                        <th class="center"
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($penjualan->penjualanDetail as $item)
                         <tr>
-                            <td class="no-border" style="padding-left:10px;">{{ $loop->iteration }}</td>
-                            <td class="no-border">{{ $item->produk->kode_produk }}</td>
-                            <td class="no-border">{{ $item->produk->nama_produk ?? '' }}</td>
-                            <td class="center no-border">{{ $item->jumlah }}</td>
-                            <td class="no-border">
-                                <div style="display: flex; justify-content: space-between; width: 100%;">
-                                    <span style="width: 10px; margin-left: 10px;">Rp</span>
-                                    <span
-                                        style="margin-left: 0px; text-align: right;">{{ number_format($item->harga, 0, ',', '.') }}</span>
-                                </div>
-                            </td>
-                            <td class="no-border">
-                                <div style="display: flex; justify-content: space-between; width: 100%;">
-                                    <span style="width: 10px;margin-left: 20px;">Rp</span>
-                                    <span
-                                        style="margin-left: 0px; text-align: right; padding-right:20px;">{{ number_format($item->harga * $item->jumlah, 0, ',', '.') }}</span>
-                                </div>
-                            </td>
+                            <td>Nama Toko</td>
+                            <td>:</td>
+                            <td>{{ $penjualan->customer->nama_toko }}</td>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                        <tr>
+                            <td>Alamat</td>
+                            <td>:</td>
+                            <td>{{ $penjualan->customer->alamat }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
+        <!-- Tanggal & Sales -->
+        <table class="header-table" style="margin-bottom: 10px;">
+            <tr>
+                <td style="width: 10%;">Tanggal</td>
+                <td style="width: 2%;">:</td>
+                <td style="width: 38%;">{{ tanggal_indonesia($penjualan->tanggal) }}</td>
+                
+                <td style="width: 10%;">Sales</td>
+                <td style="width: 2%;">:</td>
+                <td style="width: 38%;">{{ $penjualan->user->name }}</td>
+            </tr>
+        </table>
 
-        </div>
-
-        <div class="footer">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tbody>
+        <!-- Item Table -->
+        <table class="item-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 15%;">Kode</th>
+                    <th style="width: 30%;">Nama Produk</th>
+                    <th style="width: 8%;">Qty</th>
+                    <th style="width: 20%;">Harga</th>
+                    <th style="width: 22%;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($penjualan->penjualanDetail as $item)
                     <tr>
-                        <td
-                            style="padding-left:10px; border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none; width: 5%;">
-                            <strong class="terbilang">Terbilang</strong>
+                        <td class="center">{{ $loop->iteration }}</td>
+                        <td>{{ $item->produk->kode_produk }}</td>
+                        <td>{{ $item->produk->nama_produk ?? '' }}</td>
+                        <td class="center">{{ $item->jumlah }}</td>
+                        <td>
+                            <span class="currency-symbol">Rp</span>
+                            <span class="currency-value">{{ format_uang($item->harga) }}</span>
+                            <div class="clearfix"></div>
                         </td>
-                        <td
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none; width: 2%; text-align: center;">
-                            :
-                        </td>
-                        <td colspan="2"
-                            style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-left: none; border-right: none;">
-                            <div class="terbilang">
-                                {{ ucwords(terbilang($penjualan->total_harga)) }} Rupiah &nbsp;&nbsp;&nbsp;
-                                <strong style="float: right; padding-right:20px;">Rp
-                                    {{ format_uang($penjualan->total_harga) }}</strong>
-                            </div>
+                        <td>
+                            <span class="currency-symbol">Rp</span>
+                            <span class="currency-value">{{ format_uang($item->harga * $item->jumlah) }}</span>
+                            <div class="clearfix"></div>
                         </td>
                     </tr>
-                </tbody>
-            </table>
-
-            <div style="text-align: center; margin-top: 30px;">
-                <table style="width: 60%; margin: 0 auto; border-collapse: collapse;">
-                    <tr>
-                        <td style="border: none; text-align: center;">(...........................................)</td>
-                        <td style="border: none;text-align: center;">(...........................................)</td>
-                    </tr>
-                    <tr>
-                        <td style="border: none; text-align: center;">Penerima</td>
-                        <td style="border: none; text-align: center;">Pengirim</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6" style="padding: 0;">
+                        <table style="width: 100%; border: none;">
+                            <tr>
+                                <td style="width: 12%; border: none; padding: 5px;"><strong>Terbilang</strong></td>
+                                <td style="width: 2%; border: none; padding: 5px;">:</td>
+                                <td style="border: none; padding: 5px;"><strong>{{ ucwords(terbilang($penjualan->total_harga)) }} Rupiah</strong></td>
+                                <td style="width: 25%; text-align: right; border: none; padding: 5px;">
+                                    <strong>Rp {{ format_uang($penjualan->total_harga) }}</strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 
-    {{--  <script>
-        window.onload = function() {
-            window.print();
-        };
-    </script>  --}}
-
-    <noscript>
-        <div style="display: none;">Matikan "Headers and Footers" di pengaturan cetak browser untuk hasil yang bersih.
-        </div>
-    </noscript>
+    <!-- Fixed Footer for Signatures -->
+    <div class="footer">
+        <table style="width: 80%; margin: 0 auto; border: none;">
+            <tr>
+                <td style="border: none; text-align: center; width: 50%; height: 50px;"></td>
+                <td style="border: none; text-align: center; width: 50%; height: 50px;"></td>
+            </tr>
+            <tr>
+                <td style="border: none; text-align: center;">(...........................................)</td>
+                <td style="border: none; text-align: center;">(...........................................)</td>
+            </tr>
+            <tr>
+                <td style="border: none; text-align: center;">Penerima</td>
+                <td style="border: none; text-align: center;">Pengirim</td>
+            </tr>
+        </table>
+    </div>
 </body>
-
 </html>

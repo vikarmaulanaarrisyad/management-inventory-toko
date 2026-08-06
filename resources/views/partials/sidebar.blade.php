@@ -99,6 +99,12 @@
                             <p>Transaksi Pembelian</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('stok-opname.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-clipboard-check"></i>
+                            <p>Stok Opname</p>
+                        </a>
+                    </li>
                 @endif
 
                 <li class="nav-item">

@@ -54,8 +54,13 @@ class LaporanPenjualanController extends Controller
                 // Tombol cetak faktur hanya jika status sukses
                 if ($q->status == 'success') {
                     $btn .= '
-        <button type="button" class="btn btn-success btn-sm" onclick="cetakFaktur(`' . route('penjualan.cetak_faktur', $q->id) . '`)">
+        <button type="button" class="btn btn-success btn-sm me-1" onclick="cetakFaktur(`' . route('penjualan.cetak_faktur', $q->id) . '`)">
             <i class="fas fa-print"></i>
+        </button>
+        ';
+                    $btn .= '
+        <button type="button" class="btn btn-danger btn-sm me-1" onclick="showPdfModalPerItem(`' . $q->id . '`)">
+            <i class="fas fa-file-pdf"></i>
         </button>
         ';
                 }
@@ -100,9 +105,20 @@ class LaporanPenjualanController extends Controller
         // Mengambil data yang diperlukan untuk laporan
         $data = $penjualan->get();
 
+        $paperSize = $request->input('paper_size', 'a4');
+        $orientation = $request->input('orientation', 'landscape');
+
+        // Ukuran custom untuk DomPDF (dalam format points, 1 inch = 72 pt)
+        if ($paperSize === 'f4') {
+            $paperSize = array(0, 0, 612, 936); // 8.5 x 13 inches
+        } elseif ($paperSize === 'thermal') {
+            $paperSize = array(0, 0, 226.77, 1000); // Lebar 80mm
+            $orientation = 'portrait'; // Thermal selalu portrait
+        }
+
         // Generate PDF
         $pdf = Pdf::loadView('admin.laporan.penjualan.pdf', compact('data', 'tanggal', 'bulan', 'tahun'))
-            ->setPaper('a4', 'landscape'); // You can adjust paper size or orientation here
+            ->setPaper($paperSize, $orientation);
 
         // Membuat nama file berdasarkan waktu sekarang dengan format h:i:s
         $fileName = 'laporan_penjualan_' . now()->format('H-i-s') . '.pdf';

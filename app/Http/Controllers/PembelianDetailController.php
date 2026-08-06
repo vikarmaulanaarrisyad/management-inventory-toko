@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
+use App\Models\Supplier;
 use App\Models\Pembelian;
 use App\Models\PembelianDetail;
 use App\Models\Produk;
@@ -61,8 +61,15 @@ class PembelianDetailController extends Controller
      */
     public function index()
     {
-        $pembelian = Pembelian::where('status', 'pending')->first();
-        $memberSelected = Customer::where('id', $pembelian->customer_id)->first();
+        $pembelian = Pembelian::where('status', 'pending')
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if (!$pembelian) {
+            return redirect()->route('pembelian.index')->with('error', 'Tidak ada transaksi pembelian yang sedang berlangsung.');
+        }
+
+        $memberSelected = Supplier::where('id', $pembelian->supplier_id)->first();
         return view('admin.pembelian-detail.index', compact('pembelian', 'memberSelected'));
     }
 
@@ -168,23 +175,7 @@ class PembelianDetailController extends Controller
             ->make(true);
     }
 
-    public function customer()
-    {
-        $query = Customer::all();
 
-        return datatables($query)
-            ->addIndexColumn()
-            ->editColumn('nama_toko', function ($query) {
-                return '<span class="badge badge-info">' . $query->nama_toko . '</span>';
-            })
-            ->addColumn('aksi', function ($query) {
-                return '
-                    <button type="button" class="btn btn-sm btn-danger" onclick="pilihCustomer(`' . $query->id . '`,`' . $query->nama_toko . '`)"><i class="fas fa-check-circle"></i> Pilih</button>
-                ';
-            })
-            ->escapeColumns([])
-            ->make(true);
-    }
 
     public function loadForm($total)
     {

@@ -18,4 +18,9 @@ class Produk extends Model
     {
         return $this->hasMany(PenjualanDetail::class);
     }
+
+    public function stokOpnames()
+    {
+        return $this->hasMany(StokOpname::class);
+    }
 }

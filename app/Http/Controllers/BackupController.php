@@ -42,8 +42,12 @@ class BackupController extends Controller
     public function restore(Request $request)
     {
         $request->validate([
-            'sql_file' => 'required|file|mimes:sql',
+            'sql_file' => 'required|file',
         ]);
+
+        if ($request->file('sql_file')->getClientOriginalExtension() !== 'sql') {
+            return back()->with('error', 'Format file tidak valid. Harap unggah file berektensi .sql');
+        }
 
         // Simpan file SQL ke folder public/backup dengan nama sementara
         $file = $request->file('sql_file');
@@ -56,7 +60,8 @@ class BackupController extends Controller
         $db = config('database.connections.mysql');
 
         // Perintah restore MySQL
-        $command = "mysql --user={$db['username']} --password=\"{$db['password']}\" --host={$db['host']} {$db['database']} < \"{$fullPath}\"";
+        $mysql = 'C:\\xampp\\mysql\\bin\\mysql.exe'; // ← sesuaikan lokasi
+        $command = "\"{$mysql}\" --user={$db['username']} --password=\"{$db['password']}\" --host={$db['host']} {$db['database']} < \"{$fullPath}\"";
 
         exec($command, $output, $result);
 

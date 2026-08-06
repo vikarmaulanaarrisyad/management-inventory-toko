@@ -13,6 +13,7 @@ use App\Http\Controllers\{
     PenjualanDetailController,
     ProdukController,
     SettingController,
+    StokOpnameController,
     SupplierController,
     UserManagementController,
     UserProfileInformationController
@@ -111,6 +112,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('laporan/penjualan/export-pdf', [LaporanPenjualanController::class, 'exportPdf'])->name('laporan.penjualan.exportPdf');
         Route::get('/laporan/penjualan', [LaporanPenjualanController::class, 'index'])->name('laporan.penjualan');
 
+        // Stok Opname
+        Route::get('/stok-opname/data', [StokOpnameController::class, 'data'])->name('stok-opname.data');
+        Route::get('/stok-opname/stok-sistem', [StokOpnameController::class, 'getStokSistem'])->name('stok-opname.stok-sistem');
+        Route::resource('/stok-opname', StokOpnameController::class)->only(['index', 'create', 'store']);
+
         // User Management
         Route::get('/user-management/data', [UserManagementController::class, 'data'])->name('usermanagement.data');
         Route::resource('/user-management', UserManagementController::class);
@@ -124,7 +130,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
         Route::post('/backup/create', [BackupController::class, 'create'])->name('backup.create');
         Route::post('/backup/restore', [BackupController::class, 'restore'])->name('backup.restore');
-        Route::get('admin/backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
+        Route::get('/backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
         Route::delete('/backup/delete/{filename}', [BackupController::class, 'delete'])->name('backup.delete');
     });
 
@@ -132,6 +138,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Penjualan
         Route::get('/penjualan/data', [PenjualanController::class, 'data'])->name('penjualan.data');
         Route::get('/penjualan/{penjualan}/cetak-faktur', [PenjualanController::class, 'cetakFaktur'])->name('penjualan.cetak_faktur');
+        Route::get('/penjualan/{penjualan}/export-pdf-faktur', [PenjualanController::class, 'exportPdfFaktur'])->name('penjualan.export_pdf_faktur');
         Route::resource('/penjualan', PenjualanController::class);
 
         // Penjualan Detail

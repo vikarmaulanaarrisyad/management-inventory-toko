@@ -10,6 +10,7 @@ use App\Models\Produk;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PenjualanController extends Controller
 {
@@ -24,13 +25,11 @@ class PenjualanController extends Controller
     public function data()
     {
         $user = Auth::user();
-        if ($user->hasRole('karyawan')) {
-            $query = Penjualan::with('customer', 'user')
-                ->where('user_id', $user->id)
-                ->orderBy('id', 'desc');
+        $query = Penjualan::with('customer', 'user')->orderBy('id', 'desc');
+
+        if ($user->hasRole('karyawan') && !$user->hasRole('admin')) {
+            $query->where('user_id', $user->id);
         }
-        $query = Penjualan::with('customer', 'user')
-            ->orderBy('id', 'desc');
 
         return datatables($query)
             ->addIndexColumn()
@@ -139,53 +138,6 @@ class PenjualanController extends Controller
         return redirect()->route('penjualandetail.index', ['penjualan' => $penjualan->id]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store1(Request $request)
-    {
-        $penjualanDetail = PenjualanDetail::where('penjualan_id', $request->penjualan_id)->get();
-
-        if ($penjualanDetail->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Tidak ada produk yang ditemukan.'
-            ], 400); // atau 422
-        }
-
-        $penjualan = Penjualan::findOrfail($request->penjualan_id);
-
-        if ($request->customer_id == null) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Tidak ada nama toko yang ditemukan.'
-            ], 400); // atau 422
-        }
-
-        if ($request->sales_id == null) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Tidak ada sales yang ditemukan.'
-            ], 400); // atau 422
-        }
-
-        $penjualan->customer_id = $request->customer_id;
-        $penjualan->user_id = $request->sales_id;
-        $penjualan->total_item = $request->total_item;
-        $penjualan->total_harga = $request->total;
-        $penjualan->status = 'success';
-        $penjualan->update();
-
-        $penjualanDetail = PenjualanDetail::where('penjualan_id', $request->penjualan_id)->get();
-        foreach ($penjualanDetail as $item) {
-            $produk = Produk::findOrfail($item->produk_id);
-            $produk->stok -= $item->jumlah;
-            $produk->update();
-        }
-
-        return redirect()->route('penjualan.index');
-    }
-
     public function store(Request $request)
     {
         $penjualanDetail = PenjualanDetail::where('penjualan_id', $request->penjualan_id)->get();
@@ -213,24 +165,35 @@ class PenjualanController extends Controller
             ], 400);
         }
 
-        $penjualan->customer_id = $request->customer_id;
-        $penjualan->user_id = $request->sales_id;
-        $penjualan->total_item = $request->total_item;
-        $penjualan->total_harga = $request->total;
-        $penjualan->status = 'success';
-        $penjualan->update();
+        DB::beginTransaction();
+        try {
+            $penjualan->customer_id = $request->customer_id;
+            $penjualan->user_id = $request->sales_id;
+            $penjualan->total_item = $request->total_item;
+            $penjualan->total_harga = $request->total;
+            $penjualan->status = 'success';
+            $penjualan->update();
 
-        foreach ($penjualanDetail as $item) {
-            $produk = Produk::findOrFail($item->produk_id);
-            $produk->stok -= $item->jumlah;
-            $produk->update();
+            foreach ($penjualanDetail as $item) {
+                $produk = Produk::findOrFail($item->produk_id);
+                $produk->stok -= $item->jumlah;
+                $produk->update();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Transaksi berhasil disimpan!',
+                'url_faktur' => route('penjualan.cetak_faktur', $penjualan->id)
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan sistem saat menyimpan transaksi.'
+            ], 500);
         }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Transaksi berhasil disimpan!',
-            'url_faktur' => route('penjualan.cetak_faktur', $penjualan->id)
-        ]);
     }
 
 
@@ -296,5 +259,29 @@ class PenjualanController extends Controller
     {
         $penjualan->load('penjualanDetail');
         return view('admin.penjualan.cetak_faktur', compact('penjualan'));
+    }
+
+    public function exportPdfFaktur(Request $request, Penjualan $penjualan)
+    {
+        $penjualan->load('penjualanDetail');
+        
+        $paperSize = $request->input('paper_size', 'a5');
+        $orientation = $request->input('orientation', 'landscape');
+
+        if ($paperSize === 'f4') {
+            $paperSize = array(0, 0, 612, 936);
+        } elseif ($paperSize === 'thermal') {
+            $paperSize = array(0, 0, 226.77, 1000);
+            $orientation = 'portrait';
+        } elseif ($paperSize === 'a5') {
+            $paperSize = 'a5';
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.penjualan.cetak_faktur', compact('penjualan'))
+            ->setPaper($paperSize, $orientation);
+
+        $fileName = 'Faktur_' . $penjualan->invoice_number . '.pdf';
+
+        return $pdf->stream($fileName);
     }
 }

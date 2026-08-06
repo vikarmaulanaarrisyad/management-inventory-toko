@@ -43,12 +43,85 @@
                 </form>
 
                 <div class="mb-3">
-
-                    {{--  <a href="{{ route('laporan.penjualan.exportPdf') }}?tanggal={{ request('tanggal') }}&bulan={{ request('bulan') }}&tahun={{ request('tahun') }}"
-                        id="export-pdf-btn" class="btn btn-danger btn-sm me-2">
+                    <button type="button" class="btn btn-danger btn-sm me-2" onclick="showPdfModal()">
                         <i class="fas fa-file-pdf"></i> Export PDF
-                    </a>  --}}
+                    </button>
+                </div>
 
+                <!-- Modal Export PDF -->
+                <div class="modal fade" id="modalPdf" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <form action="{{ route('laporan.penjualan.exportPdf') }}" method="GET" target="_blank" class="modal-content rounded-3 shadow-lg">
+                            <input type="hidden" name="tanggal" value="" id="pdf_tanggal">
+                            <input type="hidden" name="bulan" value="" id="pdf_bulan">
+                            <input type="hidden" name="tahun" value="" id="pdf_tahun">
+                            
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title"><i class="fas fa-file-pdf"></i> Export PDF Laporan</h5>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group mb-3">
+                                    <label for="paper_size" class="form-label fw-bold">Ukuran Kertas</label>
+                                    <select name="paper_size" id="paper_size" class="form-control">
+                                        <option value="a4">A4</option>
+                                        <option value="a5">A5 (Faktur / Setengah A4)</option>
+                                        <option value="f4">F4 (Folio)</option>
+                                        <option value="thermal">Thermal (Struk Kasir)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="orientation" class="form-label fw-bold">Orientasi</label>
+                                    <select name="orientation" id="orientation" class="form-control">
+                                        <option value="portrait">Portrait</option>
+                                        <option value="landscape" selected>Landscape</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-danger" onclick="$('#modalPdf').modal('hide');"><i class="fas fa-download"></i> Unduh PDF</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal Export PDF Faktur Per Item -->
+                <div class="modal fade" id="modalPdfFaktur" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog">
+                        <form action="" id="formPdfFaktur" method="GET" target="_blank" class="modal-content rounded-3 shadow-lg">
+                            <div class="modal-header bg-danger text-white">
+                                <h5 class="modal-title"><i class="fas fa-file-pdf"></i> Export PDF Faktur</h5>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group mb-3">
+                                    <label for="paper_size_faktur" class="form-label fw-bold">Ukuran Kertas</label>
+                                    <select name="paper_size" id="paper_size_faktur" class="form-control">
+                                        <option value="a5" selected>A5 (Faktur / Setengah A4)</option>
+                                        <option value="a4">A4</option>
+                                        <option value="f4">F4 (Folio)</option>
+                                        <option value="thermal">Thermal (Struk Kasir)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="orientation_faktur" class="form-label fw-bold">Orientasi</label>
+                                    <select name="orientation" id="orientation_faktur" class="form-control">
+                                        <option value="landscape">Landscape</option>
+                                        <option value="portrait">Portrait</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-danger" onclick="$('#modalPdfFaktur').modal('hide');"><i class="fas fa-download"></i> Unduh PDF</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <div class="table-responsive">
@@ -184,6 +257,21 @@
         // Fungsi untuk mencetak faktur
         function cetakFaktur(url) {
             window.open(url);
+        }
+
+        function showPdfModal() {
+            // Update hidden inputs with current filter values
+            $('#pdf_tanggal').val($('#tanggal').val());
+            $('#pdf_bulan').val($('#bulan').val());
+            $('#pdf_tahun').val($('#tahun').val());
+            $('#modalPdf').modal('show');
+        }
+
+        function showPdfModalPerItem(id) {
+            let url = '{{ route("penjualan.export_pdf_faktur", ":id") }}';
+            url = url.replace(':id', id);
+            $('#formPdfFaktur').attr('action', url);
+            $('#modalPdfFaktur').modal('show');
         }
 
         function showDetail(url, title = "Detail Penjualan") {
